@@ -11,8 +11,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "biome format --write .",
-    "format:check": "biome format .",
-    "deploy": "node scripts/deploy.mjs"
+    "format:check": "biome format ."
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.2",

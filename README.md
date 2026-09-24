@@ -84,17 +84,9 @@ The sample entries in `src/content/papers/` (including `example-with-pdf.md` and
 
 ## Deploying to GitHub Pages
 
-The site is published at https://tripleweaving.github.io/matchmaking-resources/ from the `gh-pages` branch. To publish your latest changes:
+The site is published at https://tripleweaving.github.io/matchmaking-resources/. Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and deploys it to GitHub Pages; changes are live about a minute after pushing. You can watch a run with `gh run list`.
 
-```bash
-npm run deploy
-```
-
-That builds the site and force-pushes `dist/` to `gh-pages`; GitHub serves it within a minute. Commit and push your source to `main` as usual.
-
-`.github/workflows/deploy.yml` (kept locally, not yet in the repository) can replace this with automatic deployment on every push. To enable it, the GitHub CLI token needs the `workflow` scope: run `gh auth refresh -h github.com -s workflow`, then `git add -f .github` and push, and set Settings → Pages → Source to **GitHub Actions**.
-
-If you rename the repository, change `base` in `astro.config.ts` and `REMOTE` in `scripts/deploy.mjs` to match. PDFs are served straight from `public/pdfs/` (do not use Git LFS; Pages does not serve LFS files).
+If you rename the repository, change `base` in `astro.config.ts` to match. PDFs are served straight from `public/pdfs/` (do not use Git LFS; Pages does not serve LFS files).
 
 ## Project layout
 
