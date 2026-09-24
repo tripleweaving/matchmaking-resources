@@ -1,0 +1,314 @@
+---
+import Logo from "@/assets/logo.svg"
+import { NAVIGATION, SITE } from "@/consts"
+import { stripBase, withBase } from "@/lib/url"
+import { normalizePath } from "@/lib/utils"
+
+type Crumb = { label: string; href: string }
+type Props = { crumbs?: Crumb[]; parent?: string; hero?: boolean }
+
+const { crumbs = [], parent, hero = false } = Astro.props
+const pathname = stripBase(normalizePath(Astro.url.pathname)) || "/"
+const section = NAVIGATION.find(
+  ({ href }) => pathname === href || pathname.startsWith(`${href}/`),
+)
+// Within a section that has sub-items, the active one is either the current
+// page or the one the page declares as its parent.
+const activeChild = section?.children?.find(
+  ({ href }) => pathname === href || href === parent,
+)
+const current = (href: string) => (pathname === href ? "page" : undefined)
+// The title is always set on two lines so the landing-page morph keeps its shape.
+const titleLines = SITE.title.split(" ")
+---
+
+<aside data-bar={!hero || undefined} data-hero={hero || undefined}>
+  <sidebar-inner>
+    {hero ? (
+        <site-brand>
+          <Logo />
+          <span>
+            {titleLines.map((line) => (
+              <site-title-line>{line}</site-title-line>
+            ))}
+          </span>
+        </site-brand>
+      ) : (
+        <a href={withBase("/")} aria-label={SITE.title}>
+          <Logo />
+          <span>
+            {titleLines.map((line) => (
+              <site-title-line>{line}</site-title-line>
+            ))}
+          </span>
+        </a>
+      )}
+    <nav>
+      <ul>
+        {NAVIGATION.map((item, i) => (
+            <li>
+              <a
+                href={withBase(item.href)}
+                style={`view-transition-name: site-nav-${i + 1}`}
+                aria-current={
+                  item.children ? undefined : current(item.href)
+                }
+              >
+                {item.label}
+              </a>
+              {item === section && item.children && (
+                <ul>
+                  {item.children.map((child) => (
+                    <li>
+                      <a
+                        href={withBase(child.href)}
+                        aria-current={
+                          child === activeChild && crumbs.length === 0
+                            ? "page"
+                            : undefined
+                        }
+                      >
+                        {child.label}
+                      </a>
+                      {child === activeChild && crumbs.length > 0 && (
+                        <ul>
+                          {crumbs.map((crumb, i) => (
+                            <li data-depth={i ? 1 : undefined}>
+                              <a
+                                href={withBase(crumb.href)}
+                                aria-current={
+                                  i === crumbs.length - 1 ? "page" : undefined
+                                }
+                              >
+                                {crumb.label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {item === section &&
+                !item.children &&
+                crumbs.length > 0 &&
+                pathname !== item.href && (
+                  <ul>
+                    {crumbs.map((crumb, i) => (
+                      <li data-depth={i ? 1 : undefined}>
+                        <a
+                          href={withBase(crumb.href)}
+                          aria-current={
+                            i === crumbs.length - 1 ? "page" : undefined
+                          }
+                        >
+                          {crumb.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+            </li>
+          ))}
+        {!section &&
+            crumbs.map((crumb, i) => (
+              <li data-depth={i ? 1 : undefined}>
+                <a
+                  href={withBase(crumb.href)}
+                  aria-current={i === crumbs.length - 1 ? "page" : undefined}
+                >
+                  {crumb.label}
+                </a>
+              </li>
+            ))}
+      </ul>
+    </nav>
+  </sidebar-inner>
+  <sidebar-toggle>
+    <slot name="actions" />
+  </sidebar-toggle>
+</aside>
+
+<style>
+  aside {
+    position: sticky;
+    top: var(--page-offset-top);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100svh - var(--page-offset-top) - var(--page-offset-bottom));
+
+    @media (width < 64rem) {
+      position: static;
+      height: auto;
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-s);
+    }
+  }
+
+  sidebar-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+
+    > :is(a, site-brand) {
+      view-transition-name: site-brand;
+    }
+
+    > :is(a, site-brand) {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: fit-content;
+      font-weight: var(--font-weight-medium);
+      font-size: var(--step-0);
+      color: var(--foreground);
+      text-decoration-line: none;
+
+      svg {
+        inline-size: 1.125rem;
+        block-size: 1.125rem;
+        flex-shrink: 0;
+      }
+
+      span {
+        line-height: 1.15;
+        white-space: nowrap;
+      }
+
+      site-title-line {
+        display: block;
+      }
+
+      @media (width < 26rem) {
+        span {
+          display: none;
+        }
+      }
+    }
+
+    @media (width < 64rem) {
+      flex: 1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  nav ul {
+    --level: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+
+    a {
+      display: block;
+      margin-inline-start: calc(var(--level) * var(--space-xs));
+      color: var(--muted-foreground);
+
+      &:hover,
+      &[aria-current="page"] {
+        color: var(--foreground);
+      }
+    }
+
+    li[data-depth="1"] a {
+      margin-inline-start: calc((var(--level) + 1) * var(--space-xs));
+    }
+
+    ul {
+      --level: 1;
+
+      margin-block-start: var(--space-3xs);
+
+      ul {
+        --level: 2;
+      }
+    }
+
+    @media (width < 64rem) {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-s);
+
+      ul {
+        display: none;
+      }
+    }
+  }
+
+  nav li:has(> ul) > a {
+    @media (width < 64rem) {
+      color: var(--foreground);
+    }
+  }
+
+  sidebar-toggle {
+    display: flex;
+    align-items: center;
+    margin-inline-start: -0.5rem;
+
+    @media (width < 64rem) {
+      margin-inline-start: 0;
+      margin-inline-end: -0.5rem;
+    }
+  }
+
+  /* Landing page: centred, enlarged, title as plain text. */
+  aside[data-hero] {
+    position: static;
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-m);
+
+    sidebar-inner {
+      flex: none;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-s);
+
+      > site-brand {
+        gap: 0.5em;
+        font-size: clamp(2rem, 6vw, 3.25rem);
+        line-height: 1.1;
+        cursor: default;
+
+        svg {
+          inline-size: 1em;
+          block-size: 1em;
+        }
+
+        span {
+          display: block;
+        }
+      }
+    }
+
+    nav {
+      align-self: center;
+    }
+
+    nav ul {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2xs);
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+
+      a {
+        margin-inline-start: 0;
+      }
+
+      ul {
+        display: none;
+      }
+    }
+
+    sidebar-toggle {
+      margin: 0;
+    }
+  }
+</style>

@@ -1,0 +1,100 @@
+---
+/**
+ * One of the paper lists (Matchmaking Papers or Related Papers): the layout,
+ * the tag selector in the right column, the text filter and the cards.
+ */
+import MetaPage from "@/components/MetaPage.astro"
+import PaperCard from "@/components/PaperCard.astro"
+import TagSelector from "@/components/TagSelector.astro"
+import Layout from "@/layouts/Layout.astro"
+import { PAPER_SECTIONS, type PaperSection } from "@/consts"
+import { getPapers, getPaperTags } from "@/lib/content"
+
+type Props = { section: PaperSection }
+
+const { section } = Astro.props
+const { label, description } = PAPER_SECTIONS[section]
+const papers = await getPapers(section)
+const tags = await getPaperTags(section)
+---
+
+<Layout>
+  <MetaPage slot="head" title={label} description={description} />
+  <TagSelector slot="aside" tags={tags} total={papers.length} />
+  <papers-toolbar>
+    <input
+      type="search"
+      data-paper-search
+      placeholder="Filter by title or author"
+      aria-label="Filter papers by title or author"
+    >
+    <papers-count aria-live="polite"
+      ><span data-paper-count>{papers.length} of {papers.length}</span>
+      papers</papers-count
+    >
+  </papers-toolbar>
+  {papers.length > 0 ? (
+      <ul data-paper-list>
+        {papers.map((paper) => (
+          <PaperCard paper={paper} />
+        ))}
+      </ul>
+    ) : (
+      <ul data-paper-list hidden></ul>
+    )}
+  <p data-paper-empty hidden={papers.length > 0}>
+    {papers.length > 0
+      ? "No papers match the current filter."
+      : "No papers in this section yet."}
+  </p>
+</Layout>
+
+<style>
+  papers-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-s);
+    margin-block-end: var(--space-m);
+
+    input {
+      flex: 1 1 16rem;
+      min-width: 0;
+      padding: var(--space-3xs) var(--space-2xs);
+      font: inherit;
+      letter-spacing: inherit;
+      color: var(--foreground);
+      background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+
+      &::placeholder {
+        color: var(--muted-foreground);
+      }
+    }
+
+    papers-count {
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+      white-space: nowrap;
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  p[data-paper-empty] {
+    color: var(--muted-foreground);
+
+    &[hidden] {
+      display: none;
+    }
+  }
+</style>

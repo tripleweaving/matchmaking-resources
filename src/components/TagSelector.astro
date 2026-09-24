@@ -1,0 +1,292 @@
+---
+/**
+ * Right-hand tag selector for the papers list. Renders in the layout's `toc`
+ * slot so it takes the same column (and mobile bar) as a post's table of
+ * contents. Selection is applied client-side and mirrored to `?tag=` params.
+ */
+import ChevronIcon from "@/assets/icons/callouts/alt-arrow-down.svg"
+
+type Props = { tags: Map<string, number>; total: number }
+
+const { tags, total } = Astro.props
+---
+
+<nav aria-label="Filter by tag" data-tag-selector>
+  <selector-title aria-hidden="true">Tags</selector-title>
+  <label data-bar>
+    <input type="checkbox" aria-label="Toggle tag filter">
+    <selector-current>All papers</selector-current>
+    <ChevronIcon aria-hidden="true" />
+  </label>
+  <ul data-bar>
+    <li>
+      <button type="button" data-all aria-pressed="true">
+        All<selector-count>{total}</selector-count>
+      </button>
+    </li>
+    {[...tags].map(([tag, count]) => (
+        <li>
+          <button type="button" data-tag={tag} aria-pressed="false">
+            #{tag}<selector-count>{count}</selector-count>
+          </button>
+        </li>
+      ))}
+  </ul>
+</nav>
+
+<style>
+  nav {
+    position: sticky;
+    top: var(--page-offset-top);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(
+      100svh -
+      var(--page-offset-top) -
+      var(--page-offset-bottom)
+    );
+    font-size: var(--step--1);
+
+    @media (width < 64rem) {
+      position: relative;
+      top: auto;
+      max-height: none;
+    }
+  }
+
+  selector-title {
+    display: block;
+    flex-shrink: 0;
+    margin-block-end: var(--space-2xs);
+    font-weight: var(--font-weight-medium);
+
+    @media (width < 64rem) {
+      display: none;
+    }
+  }
+
+  label {
+    display: none;
+
+    @media (width < 64rem) {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      cursor: pointer;
+
+      input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      selector-current {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--muted-foreground);
+      }
+
+      > svg {
+        flex-shrink: 0;
+        inline-size: 1em;
+        block-size: 1em;
+        color: var(--muted-foreground);
+      }
+    }
+  }
+
+  nav:has(input:focus-visible) label {
+    @media (width < 64rem) {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  nav:has(input:checked) label > svg {
+    @media (width < 64rem) {
+      rotate: 180deg;
+    }
+  }
+
+  nav > ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (width < 64rem) {
+      display: none;
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+      max-block-size: 40svh;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--space-2xs);
+    }
+  }
+
+  nav:has(input:checked) > ul {
+    @media (width < 64rem) {
+      display: flex;
+    }
+  }
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    font: inherit;
+    letter-spacing: inherit;
+    color: var(--muted-foreground);
+    background: none;
+    border: 0;
+    cursor: pointer;
+    text-align: start;
+
+    &:hover,
+    &[aria-pressed="true"] {
+      color: var(--foreground);
+    }
+
+    &[aria-pressed="true"]::before {
+      content: "";
+      inline-size: 0.375em;
+      block-size: 0.375em;
+      margin-inline-end: var(--space-3xs);
+      background-color: currentColor;
+      border-radius: var(--radius-full);
+    }
+
+    selector-count {
+      margin-inline-start: var(--space-3xs);
+      opacity: 0.6;
+    }
+
+    @media (width < 64rem) {
+      padding-inline: var(--space-2xs);
+      background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+      border-radius: var(--radius-full);
+    }
+  }
+</style>
+
+<script>
+  const init = (signal: AbortSignal) => {
+    const nav = document.querySelector<HTMLElement>("[data-tag-selector]")
+    const list = document.querySelector<HTMLElement>("[data-paper-list]")
+    if (!nav || !list) return
+
+    const cards = [...list.querySelectorAll<HTMLElement>("li[data-tags]")]
+    const empty = document.querySelector<HTMLElement>("[data-paper-empty]")
+    const count = document.querySelector<HTMLElement>("[data-paper-count]")
+    const search = document.querySelector<HTMLInputElement>(
+      "[data-paper-search]",
+    )
+    const current = nav.querySelector<HTMLElement>("selector-current")
+    const allButton = nav.querySelector<HTMLButtonElement>("button[data-all]")
+    const tagButtons = [
+      ...nav.querySelectorAll<HTMLButtonElement>("button[data-tag]"),
+    ]
+
+    const selected = new Set<string>()
+
+    const readUrl = () => {
+      selected.clear()
+      const params = new URLSearchParams(location.search)
+      for (const tag of params.getAll("tag")) {
+        if (tagButtons.some((b) => b.dataset.tag === tag)) selected.add(tag)
+      }
+      if (search) search.value = params.get("q") ?? ""
+    }
+
+    const writeUrl = () => {
+      const params = new URLSearchParams()
+      for (const tag of selected) params.append("tag", tag)
+      const q = search?.value.trim()
+      if (q) params.set("q", q)
+      const query = params.toString()
+      history.replaceState(
+        history.state,
+        "",
+        location.pathname + (query ? "?" + query : ""),
+      )
+    }
+
+    const apply = () => {
+      const q = search?.value.trim().toLowerCase() ?? ""
+      let shown = 0
+      for (const card of cards) {
+        const tags = (card.dataset.tags ?? "").split(" ").filter(Boolean)
+        const matchesTags = [...selected].every((tag) => tags.includes(tag))
+        const matchesText = !q || (card.dataset.search ?? "").includes(q)
+        const visible = matchesTags && matchesText
+        card.hidden = !visible
+        if (visible) shown++
+      }
+      if (empty) empty.hidden = shown > 0
+      if (count) count.textContent = shown + " of " + cards.length
+
+      allButton?.setAttribute("aria-pressed", String(selected.size === 0))
+      for (const button of tagButtons) {
+        button.setAttribute(
+          "aria-pressed",
+          String(selected.has(button.dataset.tag ?? "")),
+        )
+      }
+      if (current) {
+        current.textContent =
+          selected.size === 0
+            ? "All papers"
+            : [...selected].map((tag) => "#" + tag).join(", ")
+      }
+    }
+
+    allButton?.addEventListener("click", () => {
+      selected.clear()
+      writeUrl()
+      apply()
+    })
+    for (const button of tagButtons) {
+      button.addEventListener("click", () => {
+        const tag = button.dataset.tag ?? ""
+        if (selected.has(tag)) selected.delete(tag)
+        else selected.add(tag)
+        writeUrl()
+        apply()
+      })
+    }
+    search?.addEventListener("input", () => {
+      writeUrl()
+      apply()
+    })
+    addEventListener(
+      "popstate",
+      () => {
+        readUrl()
+        apply()
+      },
+      { signal },
+    )
+
+    readUrl()
+    apply()
+  }
+  let controller: AbortController | undefined
+  document.addEventListener("astro:page-load", () => {
+    controller?.abort()
+    controller = new AbortController()
+    init(controller.signal)
+  })
+</script>

@@ -1,0 +1,52 @@
+---
+import SocialIcons from "@/components/SocialIcons.astro"
+import { CONTACT_EMAIL, SITE, SOCIALS } from "@/consts"
+---
+
+<footer>
+  <p>
+    &copy; {new Date().getFullYear()}
+    {SITE.title}
+  </p>
+  <footer-links>
+    <span>{CONTACT_EMAIL}</span>
+    <SocialIcons links={SOCIALS} />
+  </footer-links>
+</footer>
+
+<style>
+  footer {
+    --row: 2rem;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-s);
+    margin-block: var(--space-xs) var(--page-offset-bottom);
+    font-size: var(--step--1);
+    color: var(--muted-foreground);
+
+    p {
+      line-height: var(--row);
+    }
+
+    footer-links {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      line-height: var(--row);
+
+      :global(ul),
+      :global(li) {
+        display: flex;
+        align-items: center;
+        line-height: 1;
+      }
+
+      > span {
+        color: var(--muted-foreground);
+      }
+    }
+  }
+</style>

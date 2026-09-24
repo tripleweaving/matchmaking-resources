@@ -1,0 +1,180 @@
+---
+/**
+ * Renders an article's footnotes as sidenotes in the right-hand column on
+ * wide screens, each aligned with the sentence that references it. The
+ * original footnote list stays in the document for narrow screens, printing
+ * and assistive technology.
+ */
+---
+
+<sidenote-layer aria-hidden="true"></sidenote-layer>
+
+<style is:global>
+  sidenote-layer {
+    display: none;
+
+    @media (width >= 64rem) {
+      display: block;
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: var(--grid-gutter);
+      inline-size: calc(3 * var(--grid-column-width) + 2 * var(--grid-gutter));
+      pointer-events: none;
+    }
+  }
+
+  sidenote {
+    position: absolute;
+    inset-inline: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-3xs);
+    font-size: var(--step--1);
+    line-height: calc(var(--leading-offset) + 1em);
+    color: var(--muted-foreground);
+    pointer-events: auto;
+    transition: color 0.2s;
+
+    &[data-active] {
+      color: var(--foreground);
+    }
+
+    sidenote-marker {
+      font-variant-numeric: tabular-nums;
+      color: var(--foreground);
+      opacity: 0.7;
+    }
+
+    sidenote-body {
+      display: block;
+      min-inline-size: 0;
+
+      > :where(p, ul, ol, blockquote, pre, math-display) {
+        margin-block: 0 0.5em;
+      }
+
+      > :last-child {
+        margin-block-end: 0;
+      }
+
+      a {
+        --underline: var(--muted-foreground);
+
+        color: var(--foreground);
+      }
+
+      img {
+        max-inline-size: 100%;
+        block-size: auto;
+        border-radius: var(--radius-md);
+      }
+    }
+  }
+
+  @media (width >= 64rem) {
+    page-grid:has(sidenote-layer[data-active]) section.footnotes {
+      display: none;
+    }
+  }
+
+  a[data-footnote-ref] {
+    --underline: transparent;
+
+    color: var(--muted-foreground);
+
+    &:hover,
+    &[data-active] {
+      color: var(--foreground);
+    }
+  }
+</style>
+
+<script>
+  const init = (signal: AbortSignal) => {
+    const layer = document.querySelector<HTMLElement>("sidenote-layer")
+    const grid = layer?.closest<HTMLElement>("page-grid")
+    if (!layer || !grid) return
+
+    const refs = [
+      ...document.querySelectorAll<HTMLAnchorElement>(
+        "main article a[data-footnote-ref]",
+      ),
+    ]
+    if (refs.length === 0) return
+
+    const wide = matchMedia("(width >= 64rem)")
+    const notes: { ref: HTMLAnchorElement; note: HTMLElement }[] = []
+
+    for (const ref of refs) {
+      const id = decodeURIComponent(ref.hash.slice(1))
+      const source = document.getElementById(id)
+      if (!source) continue
+      const note = document.createElement("sidenote")
+      const marker = document.createElement("sidenote-marker")
+      marker.textContent = ref.textContent?.trim() ?? ""
+      const body = document.createElement("sidenote-body")
+      body.innerHTML = source.innerHTML
+      for (const back of body.querySelectorAll("a[data-footnote-backref]")) {
+        back.remove()
+      }
+      note.append(marker, body)
+      layer.append(note)
+      notes.push({ ref, note })
+
+      const on = () => {
+        note.toggleAttribute("data-active", true)
+        ref.toggleAttribute("data-active", true)
+      }
+      const off = () => {
+        note.toggleAttribute("data-active", false)
+        ref.toggleAttribute("data-active", false)
+      }
+      for (const el of [ref, note]) {
+        el.addEventListener("mouseenter", on)
+        el.addEventListener("mouseleave", off)
+      }
+      ref.addEventListener("focus", on)
+      ref.addEventListener("blur", off)
+    }
+
+    if (notes.length === 0) return
+
+    const gap = 12
+    const place = () => {
+      if (!wide.matches) {
+        layer.removeAttribute("data-active")
+        return
+      }
+      layer.setAttribute("data-active", "")
+      const gridTop = grid.getBoundingClientRect().top + scrollY
+      let floor = 0
+      for (const { ref, note } of notes) {
+        const refTop = ref.getBoundingClientRect().top + scrollY - gridTop
+        // Align the note's first line with the reference's line.
+        const top = Math.max(refTop, floor)
+        note.style.top = `${Math.round(top)}px`
+        floor = top + note.offsetHeight + gap
+      }
+    }
+
+    place()
+    document.fonts?.ready.then(place)
+    addEventListener("load", place, { signal })
+    addEventListener("resize", place, { signal })
+    wide.addEventListener("change", place, { signal })
+    if ("ResizeObserver" in window) {
+      const main = document.querySelector("main")
+      if (main) {
+        const ro = new ResizeObserver(place)
+        ro.observe(main)
+        signal.addEventListener("abort", () => ro.disconnect())
+      }
+    }
+  }
+  let controller: AbortController | undefined
+  document.addEventListener("astro:page-load", () => {
+    controller?.abort()
+    controller = new AbortController()
+    init(controller.signal)
+  })
+</script>

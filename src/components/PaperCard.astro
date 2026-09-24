@@ -1,0 +1,162 @@
+---
+import ExternalIcon from "@/assets/icons/external.svg"
+import { withBase } from "@/lib/url"
+import { formatAuthors } from "@/lib/utils"
+import type { CollectionEntry } from "astro:content"
+
+type Props = { paper: CollectionEntry<"papers"> }
+
+const { paper } = Astro.props
+const { title, authors, year, kind, pdf, url, tags, summary } = paper.data
+const notesHref = withBase(`/papers/${paper.id}`)
+const hasNotes = (paper.body ?? "").trim().length > 0
+// The title opens the stored PDF in a new tab; falls back to the external
+// source, then to the notes page when neither exists.
+const primary = pdf
+  ? { href: withBase(pdf), external: true }
+  : url
+    ? { href: url, external: true }
+    : { href: notesHref, external: false }
+const haystack = [title, ...authors, ...(tags ?? [])].join(" ").toLowerCase()
+const hostname = url && new URL(url).hostname.replace(/^www\./, "")
+---
+
+<li data-tags={(tags ?? []).join(" ")} data-year={year} data-search={haystack}>
+  <entry-info>
+    <a
+      href={primary.href}
+      target={primary.external ? "_blank" : undefined}
+      rel={primary.external ? "noopener noreferrer" : undefined}
+      >{title}</a
+    >
+    <entry-meta>
+      <paper-authors>{formatAuthors(authors)}</paper-authors>
+      <paper-venue> {year}{kind !== "paper" && ` · ${kind}`} </paper-venue>
+    </entry-meta>
+    <p>{summary}</p>
+    <entry-footer>
+      {tags && tags.length > 0 && (
+          <paper-tags>
+            {tags.map((tag) => (
+              <a href={withBase(`/tags/${tag}`)}>#{tag}</a>
+            ))}
+          </paper-tags>
+        )}
+      <paper-links>
+        {hasNotes && <a href={notesHref}>Notes</a>}
+        {pdf && (
+            <a href={withBase(pdf)} target="_blank" rel="noopener noreferrer">
+              PDF
+            </a>
+          )}
+        {url && (
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              <ExternalIcon aria-hidden="true" />
+              {hostname}
+            </a>
+          )}
+      </paper-links>
+    </entry-footer>
+  </entry-info>
+</li>
+
+<style>
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-s);
+
+    &[hidden] {
+      display: none;
+    }
+
+    entry-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      inline-size: 100%;
+
+      > a {
+        font-size: var(--step-1);
+        line-height: calc(var(--leading-offset) + 1em);
+        font-weight: var(--font-weight-medium);
+      }
+
+      entry-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-3xs);
+        margin-block-end: var(--space-3xs);
+        font-size: var(--step--1);
+        color: var(--muted-foreground);
+
+        paper-authors ~ paper-venue::before {
+          content: "·";
+          margin-inline-end: var(--space-3xs);
+        }
+
+        paper-venue {
+          color: color-mix(in oklab, var(--muted-foreground) 70%, transparent);
+        }
+      }
+
+      p {
+        color: var(--muted-foreground);
+      }
+
+      entry-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2xs);
+        margin-block-start: var(--space-2xs);
+        font-size: var(--step--1);
+
+        paper-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--space-3xs);
+
+          a {
+            padding-inline: var(--space-2xs);
+            color: var(--muted-foreground);
+            background-color: color-mix(
+              in oklab,
+              var(--muted) 50%,
+              transparent
+            );
+            border-radius: var(--radius-full);
+            text-decoration-line: none;
+
+            &:hover {
+              color: var(--foreground);
+            }
+          }
+        }
+
+        paper-links {
+          --underline: var(--muted-foreground);
+
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--space-xs);
+          margin-inline-start: auto;
+          color: var(--muted-foreground);
+
+          a {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-3xs);
+            color: var(--foreground);
+          }
+
+          svg {
+            inline-size: 1em;
+            block-size: 1em;
+          }
+        }
+      }
+    }
+  }
+</style>

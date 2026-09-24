@@ -1,0 +1,79 @@
+---
+import BlogCard from "@/components/BlogCard.astro"
+import MetaPage from "@/components/MetaPage.astro"
+import PaperCard from "@/components/PaperCard.astro"
+import Layout from "@/layouts/Layout.astro"
+import { getTags, type Tagged } from "@/lib/content"
+
+export async function getStaticPaths() {
+  const tags = await getTags()
+  return [...tags].map(([tag, tagged]) => ({
+    params: { id: tag },
+    props: { tag, ...tagged },
+  }))
+}
+
+type Props = { tag: string } & Tagged
+
+const { tag, posts, papers } = Astro.props
+---
+
+<Layout
+  crumbs={[
+    { label: "Tags", href: "/tags" },
+    { label: `#${tag}`, href: `/tags/${tag}` },
+  ]}
+>
+  <MetaPage
+    slot="head"
+    title={`Tagged "${tag}"`}
+    description={`Posts and papers tagged with ${tag}.`}
+    noindex
+  />
+  {posts.length > 0 && (
+      <section>
+        <h2>Posts</h2>
+        <ul>
+          {posts.map((post) => (
+            <BlogCard post={post} />
+          ))}
+        </ul>
+      </section>
+    )}
+  {papers.length > 0 && (
+      <section>
+        <h2>
+          Papers
+        </h2>
+        <ul>
+          {papers.map((paper) => (
+            <PaperCard paper={paper} />
+          ))}
+        </ul>
+      </section>
+    )}
+</Layout>
+
+<style>
+  section {
+    + section {
+      margin-block-start: var(--space-l);
+    }
+
+    h2 {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-xs);
+      margin-block-end: var(--space-s);
+      font-size: var(--step-1);
+      line-height: calc(var(--leading-offset) + 1em);
+      font-weight: var(--font-weight-medium);
+    }
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-m);
+    }
+  }
+</style>

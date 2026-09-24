@@ -1,0 +1,249 @@
+---
+import ExternalIcon from "@/assets/icons/external.svg"
+import MetaPage from "@/components/MetaPage.astro"
+import ScrollToTop from "@/components/ScrollToTop.astro"
+import Sidenotes from "@/components/Sidenotes.astro"
+import TableOfContents from "@/components/TableOfContents.astro"
+import Layout from "@/layouts/Layout.astro"
+import { PAPER_SECTIONS } from "@/consts"
+import { getPapers } from "@/lib/content"
+import { withBase } from "@/lib/url"
+import { formatAuthors } from "@/lib/utils"
+import { render, type CollectionEntry } from "astro:content"
+
+export async function getStaticPaths() {
+  const papers = await getPapers()
+  return papers.map((paper) => ({
+    params: { id: paper.id },
+    props: { paper },
+  }))
+}
+
+type Props = { paper: CollectionEntry<"papers"> }
+
+const { paper } = Astro.props
+const { title, authors, year, kind, pdf, url, doi, tags, summary, section } =
+  paper.data
+const parent = PAPER_SECTIONS[section].href
+const { Content, headings } = await render(paper)
+const tocHeadings = headings.filter(
+  ({ depth, slug, text }) =>
+    depth >= 2 && depth <= 4 && slug !== "footnote-label" && text.trim(),
+)
+const hasNotes = (paper.body ?? "").trim().length > 0
+const pdfHref = pdf ? withBase(pdf) : undefined
+const doiHref = doi ? `https://doi.org/${doi}` : undefined
+const hostname = url && new URL(url).hostname.replace(/^www\./, "")
+---
+
+<Layout
+  crumbs={[{ label: title, href: `/papers/${paper.id}` }]}
+  parent={parent}
+>
+  <MetaPage slot="head" title={title} description={summary} />
+  {tocHeadings.length > 0 && (
+      <TableOfContents
+        slot="toc"
+        title={title}
+        sections={[{ label: "Notes", headings: tocHeadings }]}
+      />
+    )}
+  <Sidenotes slot="margin" />
+  <ScrollToTop floating />
+  <article>
+    <header>
+      <h1>{title}</h1>
+      <paper-meta>
+        <paper-authors>{formatAuthors(authors)}</paper-authors>
+        <paper-venue> {year}{kind !== "paper" && ` · ${kind}`} </paper-venue>
+        {tags && tags.length > 0 && (
+          <paper-tags>
+            {tags.map((tag) => (
+              <a href={withBase(`/tags/${tag}`)}>#{tag}</a>
+            ))}
+          </paper-tags>
+        )}
+      </paper-meta>
+      <p>{summary}</p>
+      <paper-links>
+        {pdfHref && (
+          <a href={pdfHref} target="_blank" rel="noopener noreferrer">
+            Open PDF
+          </a>
+        )}
+        {pdfHref && (
+          <a href={pdfHref} download>
+            Download
+          </a>
+        )}
+        {url && (
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            <ExternalIcon aria-hidden="true" />
+            {hostname}
+          </a>
+        )}
+        {doiHref && (
+          <a href={doiHref} target="_blank" rel="noopener noreferrer">
+            <ExternalIcon aria-hidden="true" />
+            doi:{doi}
+          </a>
+        )}
+      </paper-links>
+    </header>
+
+    {pdfHref ? (
+      <paper-viewer>
+        <iframe src={pdfHref} title={`PDF: ${title}`} loading="lazy"></iframe>
+        <p>
+          If the PDF does not display,
+          <a href={pdfHref} target="_blank" rel="noopener noreferrer"
+            >open it in a new tab</a
+          >.
+        </p>
+      </paper-viewer>
+    ) : (
+      <paper-viewer data-missing>
+        <p>
+          No PDF is stored for this entry.
+          {url && (
+            <>
+              Read it at
+              <a href={url} target="_blank" rel="noopener noreferrer">
+                {hostname}
+              </a>.
+            </>
+          )}
+        </p>
+      </paper-viewer>
+    )}
+
+    {hasNotes && (
+      <section>
+        <h2 id="notes">Notes</h2>
+        <prose-content>
+          <Content />
+        </prose-content>
+      </section>
+    )}
+  </article>
+</Layout>
+
+<style>
+  header {
+    margin-block-end: var(--space-m);
+
+    h1 {
+      font-size: var(--step-3);
+      line-height: calc(var(--leading-offset) + 1em);
+      font-weight: var(--font-weight-medium);
+    }
+
+    paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-3xs);
+      margin-block-start: var(--space-3xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+
+      paper-authors {
+        color: var(--foreground);
+      }
+
+      paper-authors ~ paper-venue::before {
+        content: "·";
+        margin-inline-end: var(--space-3xs);
+      }
+
+      paper-venue ~ paper-tags::before {
+        content: "·";
+      }
+
+      paper-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3xs);
+
+        a {
+          color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+
+          &:hover {
+            color: var(--foreground);
+          }
+        }
+      }
+    }
+
+    > p {
+      margin-block-start: var(--space-2xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+    }
+
+    paper-links {
+      --underline: var(--muted-foreground);
+
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+      margin-block-start: var(--space-xs);
+      font-size: var(--step--1);
+
+      a {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3xs);
+        color: var(--foreground);
+      }
+
+      svg {
+        inline-size: 1em;
+        block-size: 1em;
+      }
+    }
+  }
+
+  paper-viewer {
+    display: block;
+    margin-block-end: var(--space-l);
+
+    iframe {
+      display: block;
+      inline-size: 100%;
+      block-size: min(80svh, 60rem);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background-color: var(--muted);
+    }
+
+    p {
+      margin-block-start: var(--space-2xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+
+      a {
+        --underline: var(--muted-foreground);
+
+        color: var(--foreground);
+      }
+    }
+
+    &[data-missing] {
+      padding: var(--space-s);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+
+      p {
+        margin-block-start: 0;
+      }
+    }
+  }
+
+  section h2 {
+    margin-block-end: var(--space-s);
+    font-size: var(--step-1);
+    line-height: calc(var(--leading-offset) + 1em);
+    font-weight: var(--font-weight-medium);
+  }
+</style>

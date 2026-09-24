@@ -1,0 +1,44 @@
+---
+import { SITE } from "@/consts"
+import { withBase } from "@/lib/url"
+---
+
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, user-scalable=yes"
+  >
+  <meta name="generator" content={Astro.generator}>
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content={SITE.title}>
+  <meta
+    name="format-detection"
+    content="telephone=no,date=no,address=no,email=no,url=no"
+  >
+
+  <meta name="theme-color" content="#11100e">
+
+  <link
+    rel="icon"
+    type="image/png"
+    href={withBase("/favicon-96x96.png")}
+    sizes="96x96"
+  >
+  <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")}>
+  <link rel="shortcut icon" href={withBase("/favicon.ico")}>
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href={withBase("/apple-touch-icon.png")}
+  >
+  <link rel="manifest" href={withBase("/site.webmanifest")}>
+
+  <link rel="sitemap" href={withBase("/sitemap-index.xml")}>
+
+  <slot />
+</head>

@@ -1,0 +1,562 @@
+---
+/**
+ * Chapter navigation.
+ *
+ * Desktop (≥ 64rem): a "rail" fixed in the left column, vertically centred.
+ * Collapsed it shows one short bar per heading (longer bars for higher-level
+ * headings, the active one highlighted). Hovering or focusing the rail expands
+ * it into a panel with the heading labels.
+ *
+ * Mobile: a bar under the site navigation with a progress ring, the current
+ * heading, and a checkbox-driven dropdown listing all headings.
+ */
+import ChevronIcon from "@/assets/icons/callouts/alt-arrow-down.svg"
+import type { MarkdownHeading } from "astro"
+
+type Section = {
+  id?: string
+  label: string
+  open?: boolean
+  headings: MarkdownHeading[]
+}
+type Props = { title: string; sections: Section[] }
+
+const { title, sections } = Astro.props
+---
+
+<nav aria-label="Table of contents" data-toc>
+  <label data-bar>
+    <input type="checkbox" aria-label="Toggle table of contents">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <circle cx="8" cy="8" r="6.5" />
+      <circle cx="8" cy="8" r="6.5" transform="rotate(-90 8 8)" />
+    </svg>
+    <toc-current>{title}</toc-current>
+    <ChevronIcon aria-hidden="true" />
+  </label>
+  <ul data-bar>
+    {sections.map(({ id, label, open, headings }) =>
+        id ? (
+          <li data-group>
+            {headings.length > 0 ? (
+              <details open={open || undefined}>
+                <summary>
+                  <a href={`#${id}`}><toc-label>{label}</toc-label></a>
+                  <ChevronIcon aria-hidden="true" />
+                </summary>
+                <ul>
+                  {headings.map(({ depth, slug, text }) => (
+                    <li data-depth={depth}>
+                      <a href={`#${slug}`}><toc-label>{text}</toc-label></a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              <a href={`#${id}`}><toc-label>{label}</toc-label></a>
+            )}
+          </li>
+        ) : (
+          headings.map(({ depth, slug, text }) => (
+            <li data-depth={depth}>
+              <a href={`#${slug}`}><toc-label>{text}</toc-label></a>
+            </li>
+          ))
+        ),
+      )}
+  </ul>
+</nav>
+
+<style>
+  nav {
+    --rail-width: 18rem;
+    --rail-bar-area: 2.5rem;
+    --rail-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    font-size: var(--step--1);
+
+    @media (width >= 64rem) {
+      position: fixed;
+      inset-block-start: 50%;
+      inset-inline-start: var(--grid-edge);
+      z-index: 5;
+      translate: 0 -50%;
+      inline-size: var(--rail-width);
+      max-block-size: calc(100svh - 2 * var(--page-offset-top));
+      display: flex;
+    }
+
+    @media (width < 64rem) {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  label {
+    display: none;
+
+    @media (width < 64rem) {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      cursor: pointer;
+
+      input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      > svg:first-of-type {
+        flex-shrink: 0;
+        inline-size: 1em;
+        block-size: 1em;
+
+        circle {
+          fill: none;
+          stroke: var(--border);
+          stroke-width: 2;
+
+          &:last-child {
+            --circumference: calc(2 * pi * 6.5px);
+
+            stroke: var(--muted-foreground);
+            stroke-dasharray: var(--circumference);
+            stroke-dashoffset: calc(
+              var(--circumference) *
+              (1 - var(--progress, 0))
+            );
+          }
+        }
+      }
+
+      toc-current {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--muted-foreground);
+      }
+
+      > svg:last-of-type {
+        flex-shrink: 0;
+        inline-size: 1em;
+        block-size: 1em;
+        color: var(--muted-foreground);
+      }
+    }
+  }
+
+  nav:has(input:focus-visible) label {
+    @media (width < 64rem) {
+      outline: 2px solid var(--ring);
+      outline-offset: -2px;
+    }
+  }
+
+  nav:has(input:checked) label > svg:last-of-type {
+    @media (width < 64rem) {
+      rotate: 180deg;
+    }
+  }
+
+  /* The list: a clipped panel on desktop, a dropdown on mobile. */
+  nav > ul {
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (width >= 64rem) {
+      inline-size: 100%;
+      padding: var(--space-xs) var(--space-s);
+      margin-inline-start: calc(-1 * var(--space-s));
+      border: 1px solid transparent;
+      border-radius: var(--radius-lg);
+      background-color: transparent;
+      clip-path: inset(
+        -1rem calc(100% - var(--rail-bar-area)) -1rem -1rem round
+          var(--radius-lg)
+      );
+      transition:
+        clip-path 0.28s var(--rail-ease),
+        background-color 0.18s,
+        border-color 0.18s;
+    }
+
+    @media (width < 64rem) {
+      display: none;
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+      max-block-size: 30svh;
+    }
+  }
+
+  nav:hover > ul,
+  nav:focus-within > ul {
+    @media (width >= 64rem) {
+      clip-path: inset(-1rem round var(--radius-lg));
+      background-color: var(--background);
+      border-color: var(--border);
+    }
+  }
+
+  nav:has(input:checked) > ul {
+    @media (width < 64rem) {
+      display: flex;
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+
+    a {
+      color: var(--muted-foreground);
+
+      &:hover,
+      &[data-active] {
+        color: var(--foreground);
+      }
+    }
+
+    li[data-group] {
+      font-weight: var(--font-weight-medium);
+
+      &:not(:first-child) {
+        margin-block-start: var(--space-2xs);
+      }
+
+      summary {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        cursor: pointer;
+        list-style: none;
+
+        &::-webkit-details-marker {
+          display: none;
+        }
+
+        a {
+          min-inline-size: 0;
+        }
+
+        svg {
+          flex-shrink: 0;
+          margin-inline-start: auto;
+          inline-size: 1em;
+          block-size: 1em;
+          color: var(--muted-foreground);
+        }
+
+        &:hover svg {
+          color: var(--foreground);
+        }
+      }
+
+      details[open] > summary svg {
+        rotate: 180deg;
+      }
+
+      details > ul {
+        --shift: 1;
+
+        margin-block-start: var(--space-3xs);
+        font-weight: var(--font-weight-normal);
+      }
+
+      details:not([open]):has(a[data-active]) summary a {
+        color: var(--foreground);
+      }
+    }
+
+    li[data-depth] {
+      padding-inline-start: calc(
+        (var(--shift, 0) + var(--indent, 0)) *
+        var(--space-xs)
+      );
+    }
+
+    li[data-depth="3"] {
+      --indent: 1;
+    }
+
+    li[data-depth="4"] {
+      --indent: 2;
+    }
+  }
+
+  /* Desktop rail: bars that grow into labels on hover. */
+  @media (width >= 64rem) {
+    ul {
+      gap: 0;
+    }
+
+    ul a {
+      display: grid;
+      grid-template-columns: var(--rail-bar-area) minmax(0, 1fr);
+      align-items: center;
+      block-size: 0.75rem;
+      overflow: hidden;
+      text-decoration: none;
+      transition:
+        block-size 0.24s var(--rail-ease),
+        color 0.2s;
+
+      &::before {
+        content: "";
+        inline-size: var(--bar-length, 1.5rem);
+        block-size: 2px;
+        border-radius: var(--radius-full);
+        background-color: currentColor;
+        opacity: 0.55;
+        transition:
+          inline-size 0.24s var(--rail-ease),
+          opacity 0.2s;
+      }
+
+      &[data-active]::before {
+        opacity: 1;
+      }
+    }
+
+    li[data-depth="3"] a {
+      --bar-length: 1rem;
+    }
+
+    li[data-depth="4"] a {
+      --bar-length: 0.625rem;
+    }
+
+    li[data-group] > a,
+    li[data-group] summary a {
+      --bar-length: 1.75rem;
+    }
+
+    li[data-depth] {
+      padding-inline-start: 0;
+    }
+
+    toc-label {
+      display: block;
+      min-inline-size: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      opacity: 0;
+      translate: -0.25rem 0;
+      transition:
+        opacity 0.2s,
+        translate 0.24s var(--rail-ease);
+    }
+
+    li[data-depth="3"] toc-label {
+      padding-inline-start: var(--space-xs);
+    }
+
+    li[data-depth="4"] toc-label {
+      padding-inline-start: calc(2 * var(--space-xs));
+    }
+
+    nav:hover ul a,
+    nav:focus-within ul a {
+      block-size: 1.6rem;
+    }
+
+    nav:hover toc-label,
+    nav:focus-within toc-label {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    li[data-group] summary svg {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    nav > ul,
+    ul a,
+    ul a::before,
+    toc-label {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { hashId } from "@/lib/utils"
+
+  const init = (signal: AbortSignal) => {
+    const nav = document.querySelector<HTMLElement>("nav[data-toc]")
+    if (!nav) return
+
+    const ring = nav.querySelector<SVGElement>("label svg")
+    const mobile = matchMedia("(width < 64rem)")
+    const progress = () => {
+      if (!ring || !mobile.matches) return
+      const max = document.documentElement.scrollHeight - innerHeight
+      ring.style.setProperty(
+        "--progress",
+        String(max > 0 ? Math.min(scrollY / max, 1) : 0),
+      )
+    }
+    addEventListener("scroll", progress, { passive: true, signal })
+    mobile.addEventListener("change", progress, { signal })
+    progress()
+
+    const seen = new Map<string, number>()
+    const links = new Map<Element, HTMLAnchorElement>()
+    for (const a of nav.querySelectorAll<HTMLAnchorElement>("a[href^='#']")) {
+      const id = hashId(a.hash)
+      const nth = seen.get(id) ?? 0
+      seen.set(id, nth + 1)
+      const target = document.querySelectorAll(`[id="${CSS.escape(id)}"]`)[nth]
+      if (target) links.set(target, a)
+    }
+    const articles = document.querySelectorAll("main article")
+    const list = nav.querySelector(":scope > ul")
+    const currentLabel = nav.querySelector("toc-current")
+    const toggle = nav.querySelector<HTMLInputElement>("input")
+    if (articles.length === 0 || !list || links.size === 0) return
+
+    const fallback = currentLabel?.textContent ?? ""
+
+    const scrollPaddingTop =
+      Number.parseFloat(
+        getComputedStyle(document.documentElement).scrollPaddingBlockStart,
+      ) || 0
+
+    const groups = [
+      ...nav.querySelectorAll<HTMLDetailsElement>("li[data-group] details"),
+    ].map((details) => ({
+      details,
+      active: details.open,
+      anchors: [...details.querySelectorAll<HTMLAnchorElement>("a[href^='#']")],
+    }))
+
+    const blockOf = new Map<Element, Element>()
+    for (const target of links.keys()) {
+      const block = target.closest("prose-content > *, article[data-url]")
+      if (block && !blockOf.has(block)) blockOf.set(block, target)
+    }
+
+    const sectionOf = new Map<Element, Element>()
+    for (const article of articles) {
+      let current = blockOf.get(article)
+      for (const child of article.children) {
+        if (child.tagName === "PROSE-CONTENT") {
+          for (const block of child.children) {
+            current = blockOf.get(block) ?? current
+            if (current) sectionOf.set(block, current)
+          }
+        } else if (child.tagName === "SECTION") {
+          for (const inner of child.querySelectorAll("prose-content > *")) {
+            current = blockOf.get(inner) ?? current
+            if (current) sectionOf.set(inner, current)
+          }
+        } else if (current) sectionOf.set(child, current)
+      }
+    }
+
+    const visible = new Set<Element>()
+    let prevActive = new Set<Element>()
+
+    const center = () => {
+      const run = [
+        ...list.querySelectorAll<HTMLAnchorElement>("a[data-active]"),
+      ]
+      const first = run[0]
+      const last = run[run.length - 1]
+      if (!first || !run.every((a) => a.checkVisibility())) return
+      const area = list.getBoundingClientRect()
+      const runCenter =
+        (first.getBoundingClientRect().top +
+          last.getBoundingClientRect().bottom) /
+        2
+      list.scrollTo({
+        top: list.scrollTop + runCenter - (area.top + area.height / 2),
+      })
+    }
+
+    toggle?.addEventListener("change", () => {
+      if (toggle.checked) center()
+    })
+    list.addEventListener("click", (event) => {
+      if (toggle && (event.target as Element).closest?.("a")) {
+        toggle.checked = false
+      }
+    })
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target)
+          else visible.delete(entry.target)
+        }
+
+        const activeTargets = new Set<Element>()
+        for (const block of visible) {
+          const target = sectionOf.get(block)
+          if (target) activeTargets.add(target)
+        }
+
+        let firstActive: HTMLAnchorElement | undefined
+        for (const [target, link] of links) {
+          const on = activeTargets.has(target)
+          link.toggleAttribute("data-active", on)
+          link.removeAttribute("aria-current")
+          if (on) firstActive ??= link
+        }
+        firstActive?.setAttribute("aria-current", "location")
+
+        if (currentLabel) {
+          const label = firstActive?.textContent?.trim() || fallback
+          if (currentLabel.textContent !== label) {
+            currentLabel.textContent = label
+          }
+        }
+
+        for (const group of groups) {
+          const active = group.anchors.some((a) =>
+            a.hasAttribute("data-active"),
+          )
+          if (active !== group.active) {
+            group.active = active
+            if (active) group.details.open = true
+          }
+        }
+
+        let grew = false
+        for (const target of activeTargets) {
+          if (!prevActive.has(target)) {
+            grew = true
+            break
+          }
+        }
+        prevActive = activeTargets
+        if (grew) center()
+      },
+      { rootMargin: `-${scrollPaddingTop}px 0px 0px` },
+    )
+
+    for (const block of sectionOf.keys()) observer.observe(block)
+    signal.addEventListener("abort", () => observer.disconnect())
+  }
+  let controller: AbortController | undefined
+  document.addEventListener("astro:page-load", () => {
+    controller?.abort()
+    controller = new AbortController()
+    init(controller.signal)
+  })
+</script>
