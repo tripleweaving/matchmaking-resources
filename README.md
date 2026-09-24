@@ -84,12 +84,17 @@ The sample entries in `src/content/papers/` (including `example-with-pdf.md` and
 
 ## Deploying to GitHub Pages
 
-1. In `astro.config.ts` set `site` to `https://<your-github-username>.github.io` and keep `base` equal to the repository name (`/matchmaking-resources`). If you rename the repository, change `base` to match. For a user site (`<user>.github.io`) or a custom domain, remove `base`.
-2. Update the GitHub link in `src/consts.ts` and `src/content/authors/yanushvy.md`.
-3. Push to the `main` branch of a GitHub repository.
-4. In the repository, open Settings → Pages and set Source to **GitHub Actions**.
+The site is published at https://tripleweaving.github.io/matchmaking-resources/ from the `gh-pages` branch. To publish your latest changes:
 
-The workflow in `.github/workflows/deploy.yml` builds and publishes the site on every push to `main`. PDFs are served straight from `public/pdfs/` (do not use Git LFS; Pages does not serve LFS files).
+```bash
+npm run deploy
+```
+
+That builds the site and force-pushes `dist/` to `gh-pages`; GitHub serves it within a minute. Commit and push your source to `main` as usual.
+
+`.github/workflows/deploy.yml` (kept locally, not yet in the repository) can replace this with automatic deployment on every push. To enable it, the GitHub CLI token needs the `workflow` scope: run `gh auth refresh -h github.com -s workflow`, then `git add -f .github` and push, and set Settings → Pages → Source to **GitHub Actions**.
+
+If you rename the repository, change `base` in `astro.config.ts` and `REMOTE` in `scripts/deploy.mjs` to match. PDFs are served straight from `public/pdfs/` (do not use Git LFS; Pages does not serve LFS files).
 
 ## Project layout
 

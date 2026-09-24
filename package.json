@@ -1,5 +1,5 @@
 {
-  "name": "astro-erudite",
+  "name": "matchmaking-resources",
   "type": "module",
   "version": "2.0.1",
   "engines": {
@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "biome format --write .",
-    "format:check": "biome format ."
+    "format:check": "biome format .",
+    "deploy": "node scripts/deploy.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.3.2",
