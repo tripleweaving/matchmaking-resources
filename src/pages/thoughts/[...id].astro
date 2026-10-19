@@ -91,7 +91,6 @@ const sectionHref = THOUGHT_SECTIONS[parent.data.section].href
               >{formatDate(entry.data.date)}</time
             >
           </post-meta>
-          <p>{entry.data.description}</p>
         </header>
         {entry.data.image && (
           <post-banner>
@@ -147,12 +146,6 @@ const sectionHref = THOUGHT_SECTIONS[parent.data.section].href
       a {
         color: var(--foreground);
       }
-    }
-
-    > p {
-      margin-block-start: var(--space-2xs);
-      font-size: var(--step--1);
-      color: var(--muted-foreground);
     }
   }
 
