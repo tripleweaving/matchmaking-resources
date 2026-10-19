@@ -33,7 +33,7 @@ description: "One or two sentences shown in lists and search results."
 date: 2026-09-20
 section: matchmaking   # matchmaking (default) | related: which list it appears in
 authors:
-  - yanushvy
+  - tripleweaving
 tags:
   - rating-systems
   - trueskill
@@ -50,7 +50,7 @@ Optional fields: `image` (banner, 1200×630), `draft: true` (hidden from the sit
 
 A post can contain Expressive Code blocks (`title=`, `{lines}` markers, `collapse=`), inline highlighted code (`` `code{:lang}` ``), LaTeX, callouts written as `:::name[Label]` (`note`, `tip`, `warning`, `caution`, `important`, `definition`, `theorem`, `lemma`, `corollary`, `proof`, `remark`, `notation`, `example`), inline SVG diagrams that use the site's colour variables (add `data-diagram`), tables, footnotes, `<u>`, `<mark>`, `<kbd>`, and raw HTML with an inline `<style>` for one-off blocks. Series work as in astro-erudite: put an `index.md` in a folder and sibling `.md` files become subposts.
 
-Authors live in `src/content/authors/<id>.md`. Edit `yanushvy.md` to set your name, avatar and links.
+Authors live in `src/content/authors/<id>.md`. Edit `tripleweaving.md` to set your name, avatar and links.
 
 ## Adding a paper
 
