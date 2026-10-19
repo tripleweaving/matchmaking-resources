@@ -57,14 +57,11 @@ const sections = rendered.map(({ entry, headings }, i) => ({
 const hasToc =
   sections.length > 1 || sections.some(({ headings }) => headings.length > 0)
 
+// The sidebar highlights the post's section; the post title is not listed.
 const sectionHref = THOUGHT_SECTIONS[parent.data.section].href
-const crumbs = [{ label: parent.data.title, href: `/thoughts/${parent.id}` }]
-if (isSubpost(post.id)) {
-  crumbs.push({ label: post.data.title, href: `/thoughts/${post.id}` })
-}
 ---
 
-<Layout crumbs={crumbs} parent={sectionHref}>
+<Layout parent={sectionHref}>
   <MetaPost
     slot="head"
     post={post}
