@@ -23,8 +23,11 @@ const { post } = Astro.props
       >
       {post.data.tags && post.data.tags.length > 0 && (
         <post-tags>
-          {post.data.tags.map((tag) => (
-            <a href={withBase(`/tags/${tag}`)}>{tag}</a>
+          {post.data.tags.map((tag, i) => (
+            <>
+              {i > 0 && <span aria-hidden="true">|</span>}
+              <a href={withBase(`/tags/${tag}`)}>{tag}</a>
+            </>
           ))}
         </post-tags>
       )}
@@ -81,6 +84,10 @@ const { post } = Astro.props
             &:hover {
               color: var(--foreground);
             }
+          }
+
+          span {
+            color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
           }
         }
 
