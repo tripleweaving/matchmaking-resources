@@ -11,6 +11,7 @@ import { externalLinks } from "./src/lib/external-links"
 import { headingNamespace } from "./src/lib/heading-namespace"
 import { headingAnchors } from "./src/lib/heading-anchors"
 import { baseLinks } from "./src/lib/base-links"
+import { devFetchDestFix } from "./src/lib/dev-fetch-dest-fix"
 
 /**
  * GitHub Pages settings.
@@ -29,10 +30,11 @@ export default defineConfig({
   trailingSlash: "ignore",
   compressHTML: true,
   prefetch: { prefetchAll: true },
+  vite: { plugins: [devFetchDestFix()] },
   integrations: [
     sitemap({
       filter: (page) =>
-        !/\/blog\/[^/]+\/[^/]+\/?$/.test(page) &&
+        !/\/thoughts\/[^/]+\/[^/]+\/?$/.test(page) &&
         !/\/authors\/[^/]+\/?$/.test(page) &&
         !page.includes("/tags/"),
     }),
