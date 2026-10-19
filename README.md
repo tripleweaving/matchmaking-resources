@@ -80,8 +80,6 @@ date: 2026-09-01               # date added; newest year, then newest date, sort
 Your notes in Markdown. Headings become the chapter rail on the left.
 ```
 
-The sample entries in `src/content/papers/` (including `example-with-pdf.md` and `public/pdfs/example.pdf`) can be deleted or replaced.
-
 ## Deploying to GitHub Pages
 
 The site is published at https://tripleweaving.github.io/matchmaking-resources/. Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and deploys it to GitHub Pages; changes are live about a minute after pushing. You can watch a run with `gh run list`.

@@ -9,15 +9,19 @@ const tags = await getTags()
 
 <Layout crumbs={[{ label: "Tags", href: "/tags" }]}>
   <MetaPage slot="head" title="Tags" noindex />
-  <ul>
-    {[...tags].map(([tag, { posts, papers }]) => (
-        <li>
-          <a href={withBase(`/tags/${tag}`)}
-            >#{tag}<tag-count>{posts.length + papers.length}</tag-count></a
-          >
-        </li>
-      ))}
-  </ul>
+  {tags.size > 0 ? (
+      <ul>
+        {[...tags].map(([tag, { posts, papers }]) => (
+          <li>
+            <a href={withBase(`/tags/${tag}`)}
+              >#{tag}<tag-count>{posts.length + papers.length}</tag-count></a
+            >
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No tags yet.</p>
+    )}
 </Layout>
 
 <style>
@@ -44,5 +48,9 @@ const tags = await getTags()
         opacity: 0.6;
       }
     }
+  }
+
+  p {
+    color: var(--muted-foreground);
   }
 </style>
