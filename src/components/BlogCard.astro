@@ -21,6 +21,13 @@ const { post } = Astro.props
       <time datetime={post.data.date.toISOString()}
         >{formatDate(post.data.date)}</time
       >
+      {post.data.tags && post.data.tags.length > 0 && (
+        <post-tags>
+          {post.data.tags.map((tag) => (
+            <a href={withBase(`/tags/${tag}`)}>#{tag}</a>
+          ))}
+        </post-tags>
+      )}
     </entry-meta>
     <p>{post.data.description}</p>
   </entry-info>
@@ -60,6 +67,26 @@ const { post } = Astro.props
         margin-block-end: var(--space-3xs);
         font-size: var(--step--1);
         color: var(--muted-foreground);
+
+        post-tags {
+          --underline: transparent;
+
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--space-3xs);
+
+          a {
+            color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+
+            &:hover {
+              color: var(--foreground);
+            }
+          }
+        }
+
+        time ~ post-tags::before {
+          content: "·";
+        }
       }
 
       p {

@@ -93,13 +93,6 @@ if (isSubpost(post.id)) {
             <time datetime={entry.data.date.toISOString()}
               >{formatDate(entry.data.date)}</time
             >
-            {entry.data.tags && (
-              <post-tags>
-                {entry.data.tags.map((tag) => (
-                  <a href={withBase(`/tags/${tag}`)}>#{tag}</a>
-                ))}
-              </post-tags>
-            )}
           </post-meta>
           <p>{entry.data.description}</p>
         </header>
@@ -153,26 +146,6 @@ if (isSubpost(post.id)) {
       margin-block-start: var(--space-3xs);
       font-size: var(--step--1);
       color: var(--muted-foreground);
-
-      post-tags {
-        --underline: transparent;
-
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--space-3xs);
-
-        a {
-          color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
-
-          &:hover {
-            color: var(--foreground);
-          }
-        }
-      }
-
-      time ~ post-tags::before {
-        content: "·";
-      }
 
       a {
         color: var(--foreground);
