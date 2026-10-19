@@ -17,10 +17,14 @@ const authors = defineCollection({
   }),
 })
 
-const blog = defineCollection({
+/**
+ * Thoughts: one Markdown file per post (or a folder with `index.md` for a
+ * series). `section` picks the list it appears in, as for papers.
+ */
+const thoughts = defineCollection({
   loader: glob({
     pattern: "**/[^_]*.md",
-    base: "./src/content/blog",
+    base: "./src/content/thoughts",
   }),
   schema: ({ image }) =>
     z.object({
@@ -28,6 +32,8 @@ const blog = defineCollection({
       description: z.string(),
       date: z.coerce.date(),
       order: z.number().optional(),
+      /** Which list the post belongs to. Not a tag: it picks the page. */
+      section: z.enum(["matchmaking", "related"]).default("matchmaking"),
       tags: z.array(z.string()).optional(),
       authors: z.array(reference("authors")),
       image: image().optional(),
@@ -66,4 +72,4 @@ const papers = defineCollection({
   }),
 })
 
-export const collections = { blog, authors, papers }
+export const collections = { thoughts, authors, papers }

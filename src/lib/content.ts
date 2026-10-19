@@ -4,18 +4,29 @@ import { isSubpost } from "@/lib/utils"
 
 export const pageTitle = (title: string) => `${title} | ${SITE.title}`
 
-export async function getPosts(): Promise<CollectionEntry<"blog">[]> {
-  const posts = await getCollection("blog", ({ data }) => !data.draft)
+type ThoughtSection = CollectionEntry<"thoughts">["data"]["section"]
+
+/**
+ * Non-draft top-level thoughts (no subposts), newest first. Pass a section to
+ * get only that list.
+ */
+export async function getPosts(
+  section?: ThoughtSection,
+): Promise<CollectionEntry<"thoughts">[]> {
+  const posts = await getCollection(
+    "thoughts",
+    ({ data }) => !data.draft && (!section || data.section === section),
+  )
   return posts
     .filter((post) => !isSubpost(post.id))
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 }
 
 export async function getSubposts(): Promise<
-  Map<string, CollectionEntry<"blog">[]>
+  Map<string, CollectionEntry<"thoughts">[]>
 > {
   const posts = await getCollection(
-    "blog",
+    "thoughts",
     ({ id, data }) => !data.draft && id.split("/").length === 2,
   )
   posts.sort(
@@ -62,7 +73,7 @@ export async function getPaperTags(
 }
 
 export type Tagged = {
-  posts: CollectionEntry<"blog">[]
+  posts: CollectionEntry<"thoughts">[]
   papers: CollectionEntry<"papers">[]
 }
 

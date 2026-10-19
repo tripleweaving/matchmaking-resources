@@ -23,7 +23,14 @@ export type NavItem = {
  * active.
  */
 export const NAVIGATION: NavItem[] = [
-  { href: "/blog", label: "Blog" },
+  {
+    href: "/thoughts",
+    label: "Thoughts",
+    children: [
+      { href: "/thoughts", label: "Matchmaking Thoughts" },
+      { href: "/thoughts/related", label: "Related Thoughts" },
+    ],
+  },
   {
     href: "/papers",
     label: "Papers",
@@ -33,6 +40,22 @@ export const NAVIGATION: NavItem[] = [
     ],
   },
 ]
+
+export const THOUGHT_SECTIONS = {
+  matchmaking: {
+    href: "/thoughts",
+    label: "Matchmaking Thoughts",
+    description: "Notes and essays on matchmaking in multiplayer games.",
+  },
+  related: {
+    href: "/thoughts/related",
+    label: "Related Thoughts",
+    description:
+      "Notes on rating systems, optimisation and other topics around matchmaking.",
+  },
+} as const
+
+export type ThoughtSection = keyof typeof THOUGHT_SECTIONS
 
 export const PAPER_SECTIONS = {
   matchmaking: {

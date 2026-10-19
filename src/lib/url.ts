@@ -5,7 +5,7 @@
  */
 const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "")
 
-/** Prefix a root-relative path ("/blog/foo") with the configured base. */
+/** Prefix a root-relative path ("/thoughts/foo") with the configured base. */
 export const withBase = (path: string): string =>
   path.startsWith("/") ? `${BASE}${path}` : path
 

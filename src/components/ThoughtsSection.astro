@@ -1,0 +1,41 @@
+---
+/**
+ * One of the thought lists (Matchmaking Thoughts or Related Thoughts).
+ */
+import BlogCard from "@/components/BlogCard.astro"
+import MetaPage from "@/components/MetaPage.astro"
+import Layout from "@/layouts/Layout.astro"
+import { THOUGHT_SECTIONS, type ThoughtSection } from "@/consts"
+import { getPosts } from "@/lib/content"
+
+type Props = { section: ThoughtSection }
+
+const { section } = Astro.props
+const { label, description } = THOUGHT_SECTIONS[section]
+const posts = await getPosts(section)
+---
+
+<Layout>
+  <MetaPage slot="head" title={label} description={description} />
+  {posts.length > 0 ? (
+      <ul>
+        {posts.map((post) => (
+          <BlogCard post={post} />
+        ))}
+      </ul>
+    ) : (
+      <p>No thoughts in this section yet.</p>
+    )}
+</Layout>
+
+<style>
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  p {
+    color: var(--muted-foreground);
+  }
+</style>

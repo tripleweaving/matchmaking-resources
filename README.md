@@ -1,10 +1,10 @@
 # Matchmaking Resources
 
-A static site with a blog and a tagged library of papers (with PDFs and notes) on matchmaking in multiplayer games. Built with [Astro](https://astro.build) and Markdown, based on the [astro-erudite](https://github.com/jktrn/astro-erudite) template by enscribe (MIT), and deployed to GitHub Pages.
+A static site with thoughts (blog posts) and a tagged library of papers (with PDFs and notes) on matchmaking in multiplayer games. Built with [Astro](https://astro.build) and Markdown, based on the [astro-erudite](https://github.com/jktrn/astro-erudite) template by enscribe (MIT), and deployed to GitHub Pages.
 
-- **Blog**: Markdown posts with tags, callouts, code blocks and LaTeX (rendered to MathML at build time). Chapters appear as a hover rail in the left column; footnotes (`[^note]`) are shown as sidenotes in the right margin on wide screens.
+- **Thoughts**: two lists, **Matchmaking Thoughts** (the default when you click Thoughts) and **Related Thoughts**, chosen per post with the `section` field, as for papers. Markdown posts with tags, callouts, code blocks and LaTeX (rendered to MathML at build time). Chapters appear as a hover rail in the left column; footnotes (`[^note]`) are shown as sidenotes in the right margin on wide screens.
 - **Papers**: two lists, **Matchmaking Papers** (the default when you click Papers) and **Related Papers**, chosen per paper with the `section` field, which is separate from tags. One Markdown file per paper. Frontmatter holds the citation, the body holds your notes. In the list, clicking a title opens the stored PDF in a new tab (or the external source when there is no PDF); a "Notes" link leads to the paper's own page with the embedded PDF and your notes. The list page has a tag selector on the right and a text filter; the selection is kept in the URL so filtered views can be shared.
-- **Tags**: shared between posts and papers. `/tags/<tag>` shows both.
+- **Tags**: shared between thoughts and papers. `/tags/<tag>` shows both.
 - **Dark only**: the site has a single warm dark theme and no theme switch.
 
 ## Local development
@@ -22,15 +22,16 @@ npm run preview   # serve dist/ locally
 npm run format    # format with Biome
 ```
 
-## Adding a blog post
+## Adding a thought
 
-Create `src/content/blog/<slug>.md`:
+Create `src/content/thoughts/<slug>.md`:
 
 ```markdown
 ---
 title: "How TrueSkill differs from Elo"
 description: "One or two sentences shown in lists and search results."
 date: 2026-09-20
+section: matchmaking   # matchmaking (default) | related: which list it appears in
 authors:
   - yanushvy
 tags:
@@ -91,9 +92,9 @@ If you rename the repository, change `base` in `astro.config.ts` to match. PDFs 
 ```
 src/
   consts.ts              site title, sidebar navigation, social links
-  content.config.ts      blog, authors and papers collections (schemas)
+  content.config.ts      thoughts, authors and papers collections (schemas)
   content/
-    blog/                posts
+    thoughts/            posts (thoughts)
     papers/              papers (metadata + notes)
     authors/             author profiles
   components/
@@ -103,7 +104,8 @@ src/
     Sidenotes.astro      footnotes rendered in the right margin
   pages/
     papers/              list and detail pages
-    blog/, tags/         from astro-erudite, extended for papers
+    thoughts/            matchmaking and related lists, post pages
+    tags/                from astro-erudite, extended for papers
   lib/
     content.ts           getPosts, getPapers, getTags, getPaperTags
     url.ts               base-path helpers (withBase, stripBase)

@@ -6,6 +6,7 @@ import SeriesReader from "@/components/SeriesReader.astro"
 import Sidenotes from "@/components/Sidenotes.astro"
 import TableOfContents from "@/components/TableOfContents.astro"
 import Layout from "@/layouts/Layout.astro"
+import { THOUGHT_SECTIONS } from "@/consts"
 import { getPosts, getSubposts, pageTitle } from "@/lib/content"
 import { withBase } from "@/lib/url"
 import { formatDate, isSubpost, subpostSlug } from "@/lib/utils"
@@ -15,20 +16,24 @@ import { render, type CollectionEntry } from "astro:content"
 export async function getStaticPaths() {
   const posts = await getPosts()
   const series = await getSubposts()
-  return posts.flatMap((parent, i) => {
+  // Prev/next stay within the post's own section.
+  const bySection = Map.groupBy(posts, (post) => post.data.section)
+  return posts.flatMap((parent) => {
+    const siblings = bySection.get(parent.data.section) ?? []
+    const i = siblings.indexOf(parent)
     const chain = [parent, ...(series.get(parent.id) ?? [])]
     return chain.map((post) => ({
       params: { id: post.id },
-      props: { post, chain, prev: posts[i + 1], next: posts[i - 1] },
+      props: { post, chain, prev: siblings[i + 1], next: siblings[i - 1] },
     }))
   })
 }
 
 type Props = {
-  post: CollectionEntry<"blog">
-  chain: CollectionEntry<"blog">[]
-  prev?: CollectionEntry<"blog">
-  next?: CollectionEntry<"blog">
+  post: CollectionEntry<"thoughts">
+  chain: CollectionEntry<"thoughts">[]
+  prev?: CollectionEntry<"thoughts">
+  next?: CollectionEntry<"thoughts">
 }
 
 const { post, chain, prev, next } = Astro.props
@@ -52,17 +57,18 @@ const sections = rendered.map(({ entry, headings }, i) => ({
 const hasToc =
   sections.length > 1 || sections.some(({ headings }) => headings.length > 0)
 
-const crumbs = [{ label: parent.data.title, href: `/blog/${parent.id}` }]
+const sectionHref = THOUGHT_SECTIONS[parent.data.section].href
+const crumbs = [{ label: parent.data.title, href: `/thoughts/${parent.id}` }]
 if (isSubpost(post.id)) {
-  crumbs.push({ label: post.data.title, href: `/blog/${post.id}` })
+  crumbs.push({ label: post.data.title, href: `/thoughts/${post.id}` })
 }
 ---
 
-<Layout crumbs={crumbs}>
+<Layout crumbs={crumbs} parent={sectionHref}>
   <MetaPost
     slot="head"
     post={post}
-    canonical={isSubpost(post.id) ? `/blog/${parent.id}` : undefined}
+    canonical={isSubpost(post.id) ? `/thoughts/${parent.id}` : undefined}
   />
   {hasToc && (
       <TableOfContents
@@ -77,7 +83,7 @@ if (isSubpost(post.id)) {
   {rendered.map(({ entry, Content }, i) => (
       <article
         id={i === 0 ? undefined : subpostSlug(entry.id)}
-        data-url={withBase(`/blog/${entry.id}`)}
+        data-url={withBase(`/thoughts/${entry.id}`)}
         data-title={pageTitle(entry.data.title)}
         data-embedded={i > 0 || undefined}
       >
