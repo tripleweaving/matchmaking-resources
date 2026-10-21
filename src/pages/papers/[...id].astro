@@ -56,8 +56,11 @@ const hostname = url && new URL(url).hostname.replace(/^www\./, "")
         <paper-venue> {year}{kind !== "paper" && ` · ${kind}`} </paper-venue>
         {tags && tags.length > 0 && (
           <paper-tags>
-            {tags.map((tag) => (
-              <a href={withBase(`/tags/${tag}`)}>#{tag}</a>
+            {tags.map((tag, i) => (
+              <>
+                {i > 0 && <span aria-hidden="true">|</span>}
+                <a href={withBase(`/tags/${tag}`)}>{tag}</a>
+              </>
             ))}
           </paper-tags>
         )}
@@ -133,6 +136,8 @@ const hostname = url && new URL(url).hostname.replace(/^www\./, "")
       }
 
       paper-tags {
+        --underline: transparent;
+
         display: flex;
         flex-wrap: wrap;
         gap: var(--space-3xs);
@@ -143,6 +148,10 @@ const hostname = url && new URL(url).hostname.replace(/^www\./, "")
           &:hover {
             color: var(--foreground);
           }
+        }
+
+        span {
+          color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
         }
       }
     }
