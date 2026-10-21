@@ -59,21 +59,21 @@
 }
 
 @font-face {
-  font-family: "Newsreader Fallback";
+  font-family: "Libre Caslon Text Fallback";
   src: local("Georgia");
   font-weight: 100 900;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "Newsreader Fallback";
+  font-family: "Libre Caslon Text Fallback";
   src: local("Georgia Italic"), local("Georgia-Italic");
   font-weight: 100 900;
   font-style: italic;
 }
 
 :root {
-  --font-sans: "Newsreader Variable", "Newsreader Fallback", Georgia, serif;
+  --font-sans: "Libre Caslon Text", "Libre Caslon Text Fallback", Georgia, serif;
   --font-mono: "IBM Plex Mono", "IBM Plex Mono Fallback", monospace;
   --font-math: "STIX Two Math", math;
 }
