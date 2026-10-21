@@ -68,9 +68,11 @@
 ::view-transition-old(site-brand),
 ::view-transition-old(site-nav-1),
 ::view-transition-old(site-nav-2),
+::view-transition-old(site-nav-3),
 ::view-transition-new(site-brand),
 ::view-transition-new(site-nav-1),
-::view-transition-new(site-nav-2) {
+::view-transition-new(site-nav-2),
+::view-transition-new(site-nav-3) {
   animation: none;
   mix-blend-mode: normal;
   inline-size: 100%;
@@ -82,20 +84,23 @@
 /* Arriving at the landing page: the new snapshot is the large one. */
 ::view-transition-old(site-brand),
 ::view-transition-old(site-nav-1),
-::view-transition-old(site-nav-2) {
+::view-transition-old(site-nav-2),
+::view-transition-old(site-nav-3) {
   display: none;
 }
 
 /* Leaving the landing page: the old snapshot is the large one. */
 :root[data-hero-leave]::view-transition-old(site-brand),
 :root[data-hero-leave]::view-transition-old(site-nav-1),
-:root[data-hero-leave]::view-transition-old(site-nav-2) {
+:root[data-hero-leave]::view-transition-old(site-nav-2),
+:root[data-hero-leave]::view-transition-old(site-nav-3) {
   display: block;
 }
 
 :root[data-hero-leave]::view-transition-new(site-brand),
 :root[data-hero-leave]::view-transition-new(site-nav-1),
-:root[data-hero-leave]::view-transition-new(site-nav-2) {
+:root[data-hero-leave]::view-transition-new(site-nav-2),
+:root[data-hero-leave]::view-transition-new(site-nav-3) {
   display: none;
 }
 

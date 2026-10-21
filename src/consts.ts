@@ -39,6 +39,7 @@ export const NAVIGATION: NavItem[] = [
       { href: "/papers/related", label: "Related Papers" },
     ],
   },
+  { href: "/about", label: "About" },
 ]
 
 export const THOUGHT_SECTIONS = {
