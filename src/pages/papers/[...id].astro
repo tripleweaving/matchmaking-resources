@@ -24,6 +24,7 @@ type Props = { paper: CollectionEntry<"papers"> }
 const { paper } = Astro.props
 const { title, authors, year, kind, pdf, url, doi, tags, summary, section } =
   paper.data
+// The sidebar highlights the paper's section; the paper title is not listed.
 const parent = PAPER_SECTIONS[section].href
 const { Content, headings } = await render(paper)
 const tocHeadings = headings.filter(
@@ -36,10 +37,7 @@ const doiHref = doi ? `https://doi.org/${doi}` : undefined
 const hostname = url && new URL(url).hostname.replace(/^www\./, "")
 ---
 
-<Layout
-  crumbs={[{ label: title, href: `/papers/${paper.id}` }]}
-  parent={parent}
->
+<Layout parent={parent}>
   <MetaPage slot="head" title={title} description={summary} />
   {tocHeadings.length > 0 && (
       <TableOfContents
