@@ -2,23 +2,24 @@
 import MetaPage from "@/components/MetaPage.astro"
 import Layout from "@/layouts/Layout.astro"
 
-const GAMES = [
-  "WoW",
-  "FFXIV",
-  "FlyFF",
-  "Rappelz",
-  "Lineage 2",
-  "LoL",
-  "Dota 2",
-  "Deadlock",
-  "Dragon Nest",
-  "Aion 2",
-  "World of Jade Dynasty",
-  "Honor of Kings: World",
-  "SpiritVale",
-  "Black Desert",
-  "Farever",
-  "Where Winds Meet",
+// Two unlabeled columns: MMOs, then MOBAs.
+const GAME_COLUMNS = [
+  [
+    "WoW",
+    "FFXIV",
+    "FlyFF",
+    "Rappelz",
+    "Lineage 2",
+    "Dragon Nest",
+    "Aion 2",
+    "World of Jade Dynasty",
+    "Honor of Kings: World",
+    "SpiritVale",
+    "Black Desert",
+    "Farever",
+    "Where Winds Meet",
+  ],
+  ["LoL", "Dota 2", "Deadlock"],
 ]
 ---
 
@@ -34,9 +35,13 @@ const GAMES = [
         Games I'm 'interested' in, have played a decent amount and will yap
         about (in no particular order):
       </p>
-      <ul>
-        {GAMES.map((game) => <li>{game}</li>)}
-      </ul>
+      <game-columns>
+        {GAME_COLUMNS.map((games) => (
+          <ul>
+            {games.map((game) => <li>{game}</li>)}
+          </ul>
+        ))}
+      </game-columns>
       <p>(Some more than others, ofc.)</p>
     </section>
 
@@ -96,9 +101,23 @@ const GAMES = [
     }
   }
 
+  game-columns {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-s);
+
+    ul + ul {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-inline-start: var(--space-s);
+      border-inline-start: 1px solid var(--border);
+    }
+  }
+
   ul {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     gap: var(--space-2xs);
     padding: 0;
     list-style: none;
