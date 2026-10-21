@@ -1,29 +1,132 @@
 ---
 import MetaPage from "@/components/MetaPage.astro"
 import Layout from "@/layouts/Layout.astro"
+
+const GAMES = [
+  "WoW",
+  "FFXIV",
+  "FlyFF",
+  "Rappelz",
+  "Lineage 2",
+  "LoL",
+  "Dota 2",
+  "Deadlock",
+  "Dragon Nest",
+  "Aion 2",
+  "World of Jade Dynasty",
+  "Honor of Kings: World",
+  "SpiritVale",
+  "Black Desert",
+  "Farever",
+  "Where Winds Meet",
+]
 ---
 
 <Layout>
   <MetaPage slot="head" title="About" />
-  <prose-content>
-    <p>Just a guy interested in Mobas and MMOs and systems in them.</p>
-    <p>
-      Website's design shamelessly stolen from
-      <a href="https://enscribe.dev" target="_blank" rel="noopener noreferrer"
-        >enscribe.dev</a
-      >
-    </p>
-    <p>
-      AI's responsible for the functionality and grammar checks, the thoughts
-      are my own though
-    </p>
-    <p>
-      Games I'm 'interested' + have played a decent amount + will yap about (in
-      no particular order):<br />
-      WoW / FFXIV / FlyFF / Rappelz / Lineage 2 / LoL / Dota 2 / Deadlock /
-      Dragon Nest / Aion 2 / World of Jade Dynasty / Honor of Kings: World /
-      SpiritVale / Black Desert / Farever
-    </p>
-    <p>(some more than others ofc)</p>
-  </prose-content>
+  <article>
+    <h1>About</h1>
+    <p>Just a guy interested in MOBAs and MMOs, and the systems in them.</p>
+
+    <section>
+      <h2>Games</h2>
+      <p>
+        Games I'm 'interested' in, have played a decent amount and will yap
+        about (in no particular order):
+      </p>
+      <ul>
+        {GAMES.map((game) => <li>{game}</li>)}
+      </ul>
+      <p>(Some more than others, ofc.)</p>
+    </section>
+
+    <footer>
+      <p>
+        The website's design is shamelessly stolen from
+        <a href="https://enscribe.dev" target="_blank" rel="noopener noreferrer"
+          >enscribe.dev</a
+        >.
+      </p>
+      <p>
+        AI is responsible for the functionality and grammar checks; the thoughts
+        are my own, though.
+      </p>
+    </footer>
+  </article>
 </Layout>
+
+<style>
+  article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-l);
+    max-inline-size: var(--measure);
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    line-height: calc(var(--leading-offset) + 1em);
+    font-weight: var(--font-weight-medium);
+
+    + p {
+      margin-block-start: calc(var(--space-s) - var(--space-l));
+      font-size: var(--step-1);
+      color: var(--prose-foreground);
+    }
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+
+    h2 {
+      font-size: var(--step-1);
+      line-height: calc(var(--leading-offset) + 1em);
+      font-weight: var(--font-weight-medium);
+    }
+
+    p {
+      color: var(--prose-foreground);
+    }
+
+    p:last-child {
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+    }
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: var(--space-3xs) var(--space-xs);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background-color: var(--muted);
+      font-size: var(--step--1);
+      color: var(--foreground);
+      white-space: nowrap;
+    }
+  }
+
+  footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    padding-block-start: var(--space-s);
+    border-block-start: 1px solid var(--border);
+    font-size: var(--step--1);
+    color: var(--muted-foreground);
+
+    a {
+      --underline: var(--muted-foreground);
+
+      color: var(--foreground);
+    }
+  }
+</style>
