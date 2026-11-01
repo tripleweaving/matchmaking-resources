@@ -11,5 +11,5 @@ tags:
   - Psychology
   - Success
 summary: "Evidence of a disconnect between perceived success and personally defined success. People assume others measure success by status and fame, while they measure their own by education, relationships and character."
-date: 2026-10-28
+date: "2026-10-28T17:39:46+01:00"
 ---

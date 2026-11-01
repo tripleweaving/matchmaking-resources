@@ -13,5 +13,5 @@ tags:
   - Psychology
   - Self-Esteem
 summary: "How people chase self-esteem matters more than whether it is high or low. When people stake their self-worth on succeeding at something, every failure feels like a judgment of them as a person. That hurts learning, relationships and, over time, health."
-date: 2026-10-31
+date: "2026-10-31T10:49:47+01:00"
 ---

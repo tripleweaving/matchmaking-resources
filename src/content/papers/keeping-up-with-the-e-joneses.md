@@ -12,5 +12,5 @@ tags:
   - Psychology
   - Social Media
 summary: "People who use social networks are less satisfied with their income. The effect is strongest for young people. The paper doesn't measure overall happiness, but the earlier work it cites ties social comparison to lower well-being."
-date: 2026-10-30
+date: "2026-10-30T13:48:33+01:00"
 ---

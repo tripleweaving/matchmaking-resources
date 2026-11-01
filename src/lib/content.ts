@@ -40,8 +40,8 @@ export async function getSubposts(): Promise<
 type PaperSection = CollectionEntry<"papers">["data"]["section"]
 
 /**
- * Non-draft papers, newest year first, then most recently added. Pass a
- * section to get only that list.
+ * Non-draft papers, most recently added first. Pass a section to get only
+ * that list.
  */
 export async function getPapers(
   section?: PaperSection,
@@ -50,11 +50,7 @@ export async function getPapers(
     "papers",
     ({ data }) => !data.draft && (!section || data.section === section),
   )
-  return papers.sort(
-    (a, b) =>
-      b.data.year - a.data.year ||
-      b.data.date.getTime() - a.data.date.getTime(),
-  )
+  return papers.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
 }
 
 /** Tag → number of papers carrying it, sorted by count then name. */

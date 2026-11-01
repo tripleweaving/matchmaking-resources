@@ -13,5 +13,5 @@ tags:
   - Social
   - League of Legends
 summary: "A set of interviews about team collaboration within matchmaking. Nothing groundbreaking: we already know all that from experience. However, some citations are interesting."
-date: 2026-10-21
+date: "2026-10-21T02:25:44+02:00"
 ---

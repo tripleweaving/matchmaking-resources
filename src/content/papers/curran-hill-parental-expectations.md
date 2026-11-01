@@ -13,5 +13,5 @@ tags:
   - Psychology
   - Perfectionism
 summary: "Young people feel their parents expect more of them and criticize them more than in the past, and this goes along with rising perfectionism."
-date: 2026-10-28
+date: "2026-10-28T18:14:36+01:00"
 ---

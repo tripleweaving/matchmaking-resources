@@ -12,5 +12,5 @@ tags:
   - Psychology
   - Status
 summary: "People want status relative to others, not just status. They would rather rank above others, even if it means everyone ends up with less."
-date: 2026-10-28
+date: "2026-10-28T18:36:00+01:00"
 ---

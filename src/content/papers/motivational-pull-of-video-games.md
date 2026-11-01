@@ -15,5 +15,5 @@ tags:
   - Motivation
   - MMO
 summary: "Games pull players in when they make them feel competent, free to make their own choices, and connected to others. These feelings predict enjoyment, wanting to keep playing, and a short-term boost in well-being."
-date: 2026-10-30
+date: "2026-10-30T14:21:37+01:00"
 ---

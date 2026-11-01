@@ -11,5 +11,5 @@ tags:
   - Psychology
   - Self-Esteem
 summary: "People want others to see them the way they see themselves, even when that self-view is negative. People with low self-esteem often choose partners and feedback that confirm it over praise, which makes changing how they see themselves hard."
-date: 2026-10-31
+date: "2026-10-31T13:54:37+01:00"
 ---

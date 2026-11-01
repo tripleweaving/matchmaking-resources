@@ -14,5 +14,5 @@ tags:
   - Psychology
   - Status
 summary: "Respect within your own groups, like friends or coworkers, predicts happiness far better than income or wealth does."
-date: 2026-10-30
+date: "2026-10-30T13:10:35+01:00"
 ---
