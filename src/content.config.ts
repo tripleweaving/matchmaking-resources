@@ -68,6 +68,8 @@ const papers = defineCollection({
     tags: z.array(z.string()).optional(),
     summary: z.string(),
     date: z.coerce.date(),
+    /** To be read: shows a red "TBR" mark before the title. */
+    tbr: z.boolean().optional(),
     draft: z.boolean().optional(),
   }),
 })

@@ -1,0 +1,22 @@
+---
+// Red "TBR" box placed before a paper's title: the paper is still to be read.
+---
+
+<tbr-mark title="To be read later">TBR</tbr-mark>
+
+<style>
+  tbr-mark {
+    display: inline-block;
+    margin-inline-end: 0.4em;
+    padding-inline: 0.35em;
+    border: 1px solid color-mix(in oklab, var(--red-9) 50%, transparent);
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in oklab, var(--red-9) 15%, transparent);
+    color: var(--red-11);
+    font-size: 0.65em;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.5;
+    letter-spacing: 0.05em;
+    vertical-align: 0.2em;
+  }
+</style>
