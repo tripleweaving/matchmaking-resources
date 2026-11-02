@@ -8,7 +8,7 @@ export const SITE = {
   locale: "en-US",
   dir: "ltr",
   defaultPageImage: "/static/opengraph-image.png",
-  defaultPostImage: "/static/1200x630.png",
+  defaultPostImage: "/static/opengraph-image.png",
 } as const
 
 export type NavItem = {

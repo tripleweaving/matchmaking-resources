@@ -31,6 +31,11 @@ export default defineConfig({
   trailingSlash: "ignore",
   compressHTML: true,
   prefetch: { prefetchAll: true },
+  // Old thought URLs, from before slugs used hyphens.
+  redirects: {
+    "/thoughts/gatekeep_in_practice": "/thoughts/gatekeep-in-practice/",
+    "/thoughts/mana_as_social_lever": "/thoughts/mana-as-social-lever/",
+  },
   vite: { plugins: [devFetchDestFix()] },
   integrations: [
     sitemap({

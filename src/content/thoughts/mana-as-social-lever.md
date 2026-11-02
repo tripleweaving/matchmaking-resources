@@ -1,6 +1,6 @@
 ---
 title: "Mana problems as a point of social interaction in MMOs"
-description: "Out of mana, but it feels like it's not that bad"
+description: "How downtime in MMO grinding, like sitting to regen mana, waiting for respawns or playing a support class, gives players room to talk."
 date: 2026-10-19
 section: related
 image: ./mana-banner.png
