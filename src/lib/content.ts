@@ -41,7 +41,8 @@ type PaperSection = CollectionEntry<"papers">["data"]["section"]
 
 /**
  * Non-draft papers, most recently added first. Pass a section to get only
- * that list.
+ * that list; the matchmaking list is instead ordered by publication year,
+ * newest first, and papers from the same year are most recently added first.
  */
 export async function getPapers(
   section?: PaperSection,
@@ -50,7 +51,14 @@ export async function getPapers(
     "papers",
     ({ data }) => !data.draft && (!section || data.section === section),
   )
-  return papers.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  const byAdded = (
+    a: CollectionEntry<"papers">,
+    b: CollectionEntry<"papers">,
+  ) => b.data.date.getTime() - a.data.date.getTime()
+  if (section === "matchmaking") {
+    return papers.sort((a, b) => b.data.year - a.data.year || byAdded(a, b))
+  }
+  return papers.sort(byAdded)
 }
 
 /** Tag → number of papers carrying it, sorted by count then name. */
