@@ -1,8 +1,21 @@
 ---
+import JsonLd from "@/components/JsonLd.astro"
 import MetaPage from "@/components/MetaPage.astro"
+import { SITE } from "@/consts"
 import Layout from "@/layouts/Layout.astro"
+
+// Tells search engines the site's name, including the handle people search for.
+const schema = {
+  "@type": "WebSite",
+  name: SITE.title,
+  alternateName: ["tripleweaving", "tripleweaving.com"],
+  url: new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href,
+  description: SITE.description,
+  inLanguage: SITE.locale,
+}
 ---
 
 <Layout hero>
   <MetaPage slot="head" />
+  <JsonLd slot="head" data={schema} />
 </Layout>

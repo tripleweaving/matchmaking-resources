@@ -1,0 +1,15 @@
+---
+/**
+ * Structured data (schema.org JSON-LD) for search engines. `<` is escaped so a
+ * value can never close the script element early.
+ */
+type Props = { data: Record<string, unknown> }
+
+const { data } = Astro.props
+const json = JSON.stringify({
+  "@context": "https://schema.org",
+  ...data,
+}).replace(/</g, "\\u003c")
+---
+
+<script is:inline type="application/ld+json" set:html={json} />

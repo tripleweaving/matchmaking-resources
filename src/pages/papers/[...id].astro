@@ -1,5 +1,6 @@
 ---
 import ExternalIcon from "@/assets/icons/external.svg"
+import JsonLd from "@/components/JsonLd.astro"
 import MetaPage from "@/components/MetaPage.astro"
 import ScrollToTop from "@/components/ScrollToTop.astro"
 import Sidenotes from "@/components/Sidenotes.astro"
@@ -7,7 +8,7 @@ import TbrMark from "@/components/TbrMark.astro"
 import TableOfContents from "@/components/TableOfContents.astro"
 import Layout from "@/layouts/Layout.astro"
 import { PAPER_SECTIONS } from "@/consts"
-import { getPapers } from "@/lib/content"
+import { getPapers, paperDescription } from "@/lib/content"
 import { withBase } from "@/lib/url"
 import { formatAuthors } from "@/lib/utils"
 import { render, type CollectionEntry } from "astro:content"
@@ -47,10 +48,33 @@ const hasNotes = (paper.body ?? "").trim().length > 0
 const pdfHref = pdf ? withBase(pdf) : undefined
 const doiHref = doi ? `https://doi.org/${doi}` : undefined
 const hostname = url && new URL(url).hostname.replace(/^www\./, "")
+const description = paperDescription(paper)
+
+const SCHEMA_TYPES = {
+  paper: "ScholarlyArticle",
+  article: "ScholarlyArticle",
+  report: "Report",
+  thesis: "Thesis",
+  book: "Book",
+  talk: "CreativeWork",
+} as const
+const schema = {
+  "@type": SCHEMA_TYPES[kind],
+  headline: title,
+  name: title,
+  description,
+  author: authors.map((name) => ({ "@type": "Person", name })),
+  datePublished: String(year),
+  url: new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href,
+  sameAs: [doiHref, url].filter(Boolean),
+  keywords:
+    tags?.filter((tag) => tag !== "Not yet read").join(", ") || undefined,
+}
 ---
 
 <Layout parent={parent}>
-  <MetaPage slot="head" title={title} description={summary} />
+  <MetaPage slot="head" title={title} description={description} />
+  <JsonLd slot="head" data={schema} />
   {tocHeadings.length > 0 && (
       <TableOfContents
         slot="toc"

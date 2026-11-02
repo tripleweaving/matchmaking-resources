@@ -1,6 +1,6 @@
-import { SITE } from "@/consts"
+import { PAPER_SECTIONS, SITE } from "@/consts"
 import { getCollection, type CollectionEntry } from "astro:content"
-import { isSubpost } from "@/lib/utils"
+import { formatAuthors, isSubpost } from "@/lib/utils"
 
 export const pageTitle = (title: string) => `${title} | ${SITE.title}`
 
@@ -59,6 +59,20 @@ export async function getPapers(
     return papers.sort((a, b) => b.data.year - a.data.year || byAdded(a, b))
   }
   return papers.sort(byAdded)
+}
+
+/**
+ * Search-result description for a paper. Papers still to be read have no real
+ * summary yet ("Read Later"), so their description is built from the citation.
+ */
+export function paperDescription(paper: CollectionEntry<"papers">): string {
+  const { title, authors, year, venue, section, summary, tbr } = paper.data
+  if (!tbr) return summary
+  const published =
+    venue && !venue.includes(String(year))
+      ? `${venue}, ${year}`
+      : (venue ?? year)
+  return `${title}, by ${formatAuthors(authors)} (${published}). Listed in ${PAPER_SECTIONS[section].label} on ${SITE.title}.`
 }
 
 /** Tag → number of papers carrying it, sorted by count then name. */
