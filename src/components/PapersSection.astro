@@ -21,6 +21,11 @@ const tags = await getPaperTags(section)
 <Layout>
   <MetaPage slot="head" title={label} description={description} />
   <TagSelector slot="aside" tags={tags} total={papers.length} />
+  {section === "matchmaking" && (
+    <papers-notice role="note">
+      In the process of moving my notes to this website
+    </papers-notice>
+  )}
   <papers-toolbar>
     <input
       type="search"
@@ -50,6 +55,16 @@ const tags = await getPaperTags(section)
 </Layout>
 
 <style>
+  papers-notice {
+    display: block;
+    margin-block-end: var(--space-s);
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid color-mix(in oklab, var(--red-9) 50%, transparent);
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklab, var(--red-9) 15%, transparent);
+    color: var(--red-11);
+  }
+
   papers-toolbar {
     display: flex;
     flex-wrap: wrap;
