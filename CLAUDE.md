@@ -11,9 +11,11 @@ Astro site at https://tripleweaving.com: **Thoughts** (essays) and **Papers** (a
 ## Content
 
 - Thoughts live in `src/content/thoughts/<slug>.md`; a folder with `index.md` plus sibling files is a series. Papers live in `src/content/papers/<slug>.md`, citation in frontmatter, the user's notes in the body. Field meanings are in `src/content.config.ts`.
+- The filename is the URL slug: lowercase words joined by hyphens (`gatekeep-in-practice.md`). Renaming a published entry needs a matching entry in `redirects` in `astro.config.ts`.
+- A thought's `description` is the snippet search results show under the title, and it also appears on the list card: one plain sentence saying what the post is about. An `image` (1200×630) becomes the share preview; without one, links share `public/static/opengraph-image.png`.
 - `section` (`matchmaking` | `related`) picks which list an entry appears in. Tags are separate and shared between thoughts and papers.
 - A paper's `date` is the date it was added. The matchmaking list sorts by `year`, then by date added.
-- Unread papers carry `tbr: true` and `summary: "Read Later"`. Their search description is built from the citation (`paperDescription` in `src/lib/content.ts`).
+- Unread papers carry `tbr: true` and `summary: "Read Later"`. Their search description is built from the citation (`paperDescription` in `src/lib/content.ts`). Once the user has written notes on a paper, drop `tbr` and give it a one-sentence `summary`, which then becomes its search snippet.
 - PDFs are plain files in `public/pdfs/` (GitHub Pages serves no Git LFS), under about 25 MB, and only ones that may be redistributed; for the rest, set `url` to the source.
 - Markdown extras: callouts `:::name[Label]` (names in `src/lib/callout.ts`), LaTeX via Temml, Expressive Code, footnotes rendered as sidenotes, inline SVG diagrams marked `data-diagram` that use the site's colour variables.
 
