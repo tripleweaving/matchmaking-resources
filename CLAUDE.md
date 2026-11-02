@@ -1,6 +1,6 @@
 # Matchmaking Resources
 
-Astro site at https://tripleweaving.com: **Thoughts** (essays) and **Papers** (a tagged reading list with PDFs and notes) on matchmaking in multiplayer games. Forked from [astro-erudite](https://github.com/jktrn/astro-erudite) (MIT); its credit stays in `README.md` and `LICENSE`.
+Astro site at https://tripleweaving.com: **Thoughts** (essays) and **Papers** (a tagged reading list with PDFs and notes) on matchmaking in multiplayer games. Forked from [astro-erudite](https://github.com/jktrn/astro-erudite) (MIT); its credit stays in `README.md` and `LICENSE`. `README.md` is the public face of the GitHub repo and stays a four-line intro (title, one sentence, site link, credit); developer notes belong in this file.
 
 ## Workflow
 
@@ -24,8 +24,14 @@ Astro site at https://tripleweaving.com: **Thoughts** (essays) and **Papers** (a
 - Internal links go through `withBase()` from `src/lib/url.ts`. `base` is `"/"` today; keeping the helper lets the site move back under a sub-path.
 - The site uses Astro's ClientRouter. Every client `<script>` exposes `init(signal)`, registers on `astro:page-load`, and releases window listeners and observers through the `AbortSignal`; `src/components/ScrollToTop.astro` is the pattern.
 - Styling is native CSS on custom elements, in astro-erudite's style, with one warm dark theme and no theme switch.
-- The look follows enscribe.dev, rebuilt with our own CSS. enscribe.dev's code and its paid MD Lórien font are proprietary: use the MIT template code and Libre Caslon Text (`src/styles/fonts.css`).
-- Structured data goes through `src/components/JsonLd.astro`: `WebSite` on the home page, a scholarly type on paper pages, `BlogPosting` in `MetaPost.astro`.
+- The look follows enscribe.dev, rebuilt with our own CSS. enscribe.dev's code and its paid MD Lórien font are proprietary: use the MIT template code and Libre Caslon Text (`@fontsource/libre-caslon-text`, imported in `src/layouts/Layout.astro`; font stacks in `src/styles/fonts.css`).
+
+## Search and branding
+
+- Google Search Console (a Domain property) and Bing Webmaster Tools are set up for `tripleweaving.com` under the user's accounts. New pages reach them through the sitemap from `@astrojs/sitemap`; its filter in `astro.config.ts` leaves out subposts, author pages and tag pages, which also carry `noindex`.
+- Structured data goes through `src/components/JsonLd.astro`: `WebSite` on the home page (with `tripleweaving` as an alternate name), a scholarly type on paper pages, `BlogPosting` in `MetaPost.astro`.
+- The site's mark is three woven strands. The same path is in `src/assets/logo.svg` (sidebar, `currentColor`) and `public/favicon.svg`; the PNG and ICO icons in `public/` are rasterised from `favicon.svg` (sharp is in `node_modules`).
+- `public/static/opengraph-image.png` is the default share image and has `SITE.title`, `SITE.description` and the domain baked in, so regenerate it when those change: a 1200×630 HTML page in Libre Caslon on `#11100e`, screenshotted with headless Edge or Chrome.
 
 ## Hosting
 
