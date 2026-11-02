@@ -18,11 +18,12 @@ import { devFetchDestFix } from "./src/lib/dev-fetch-dest-fix"
  *
  * - Project site (https://<user>.github.io/<repo>/): set `site` to your
  *   GitHub Pages origin and `base` to "/<repo>".
- * - User site (repo named <user>.github.io) or a custom domain: keep `site`
- *   and remove `base`.
+ * - User site (repo named <user>.github.io) or a custom domain: set `site`
+ *   to that origin and `base` to "/". The custom domain itself is set in the
+ *   repository's Pages settings.
  */
-const site = "https://tripleweaving.github.io"
-const base = "/matchmaking-resources"
+const site = "https://tripleweaving.com"
+const base = "/"
 
 export default defineConfig({
   site,

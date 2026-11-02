@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-The site is served at `http://localhost:4321/matchmaking-resources/` (the trailing path is the GitHub Pages base path, see below).
+The site is served at `http://localhost:4321/`.
 
 ```bash
 npm run build     # type-check and build into dist/
@@ -83,9 +83,9 @@ Your notes in Markdown. Headings become the chapter rail on the left.
 
 ## Deploying to GitHub Pages
 
-The site is published at https://tripleweaving.github.io/matchmaking-resources/. Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and deploys it to GitHub Pages; changes are live about a minute after pushing. You can watch a run with `gh run list`.
+The site is published at https://tripleweaving.com (a custom domain on GitHub Pages; DNS is at Cloudflare, and the old https://tripleweaving.github.io/matchmaking-resources/ URLs redirect to it). Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and deploys it to GitHub Pages; changes are live about a minute after pushing. You can watch a run with `gh run list`.
 
-If you rename the repository, change `base` in `astro.config.ts` to match. PDFs are served straight from `public/pdfs/` (do not use Git LFS; Pages does not serve LFS files).
+The custom domain is set under the repository's Settings → Pages; `site` in `astro.config.ts` must match it. PDFs are served straight from `public/pdfs/` (do not use Git LFS; Pages does not serve LFS files).
 
 ## Project layout
 
