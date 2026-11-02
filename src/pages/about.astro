@@ -26,9 +26,6 @@ const GAME_COLUMNS = [
 <Layout>
   <MetaPage slot="head" title="About" />
   <article>
-    <h1>About</h1>
-    <p>Just a guy interested in MOBAs and MMOs, and the systems in them.</p>
-
     <section>
       <h2>Games</h2>
       <p>
@@ -66,18 +63,6 @@ const GAME_COLUMNS = [
     flex-direction: column;
     gap: var(--space-l);
     max-inline-size: var(--measure);
-  }
-
-  h1 {
-    font-size: var(--step-3);
-    line-height: calc(var(--leading-offset) + 1em);
-    font-weight: var(--font-weight-medium);
-
-    + p {
-      margin-block-start: calc(var(--space-s) - var(--space-l));
-      font-size: var(--step-1);
-      color: var(--prose-foreground);
-    }
   }
 
   section {
