@@ -41,7 +41,7 @@ export default defineConfig({
     sitemap({
       filter: (page) =>
         !/\/thoughts\/[^/]+\/[^/]+\/?$/.test(page) &&
-        !/\/authors\/[^/]+\/?$/.test(page) &&
+        !/\/authors(\/|$)/.test(page) &&
         !page.includes("/tags/"),
     }),
   ],
