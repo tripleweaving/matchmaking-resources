@@ -16,6 +16,6 @@ tags:
   - Psychology
   - Difficulty
   - Motivation
-summary: "Players facing harder content quit less, since both games studied keep failure well under 50%. Where failure is down to the player's own skill, early difficulty spikes drive people away; where character strength can make up for it, they don't."
+summary: "Players who get harder content quit less, because in both games they fail well under half the time. Sudden jumps in difficulty early on make players quit when failing comes down to their own skill, but not when a stronger character can make up for it. I'd guess the same holds in gear-dependent 1v1 PvP games: a player the matchmaker puts against a much stronger opponent may not quit, since better gear can close the gap."
 date: "2026-11-10T00:37:07+01:00"
 ---
