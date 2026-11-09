@@ -16,6 +16,6 @@ tags:
   - Psychology
   - Difficulty
   - Motivation
-summary: "Ubisoft play data from Rayman Legends and The Division: players facing harder content quit less, since both games keep failure well under 50%. In Rayman, where failure is down to the player's own skill, early difficulty spikes drive people away; in The Division, where a stronger gun fixes it, they don't."
+summary: "Players facing harder content quit less, since both games studied keep failure well under 50%. Where failure is down to the player's own skill, early difficulty spikes drive people away; where character strength can make up for it, they don't."
 date: "2026-11-10T00:37:07+01:00"
 ---
